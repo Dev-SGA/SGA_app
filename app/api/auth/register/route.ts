@@ -33,7 +33,8 @@ export async function POST(request: Request) {
     return response;
   } catch (e) {
     if (e instanceof AthleteAuthError) {
-      return NextResponse.json({ ok: false, error: e.message }, { status: 400 });
+      const status = e.message.includes("not configured") ? 503 : 400;
+      return NextResponse.json({ ok: false, error: e.message }, { status });
     }
     console.error(e);
     return NextResponse.json({ ok: false, error: "Registration failed." }, { status: 500 });

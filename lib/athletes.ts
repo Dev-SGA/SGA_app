@@ -2,7 +2,7 @@ import { randomUUID } from "crypto";
 import { neon } from "@neondatabase/serverless";
 import { promises as fs } from "fs";
 import path from "path";
-import { getDatabaseUrl } from "@/lib/env";
+import { getDatabaseUrl, getDirectDatabaseUrl, isVercelDeployment } from "@/lib/env";
 import { hashPassword, verifyPassword } from "@/lib/password";
 
 export type AthleteRecord = {
@@ -21,26 +21,38 @@ const JSON_PATH = path.join(process.cwd(), "data", "athletes.json");
 
 let schemaReady = false;
 
+const STORAGE_NOT_CONFIGURED =
+  "Registration storage is not configured. On Vercel, connect Neon/Postgres and set DATABASE_URL (or use the Vercel Neon integration), then redeploy.";
+
+async function ensureSchema(sql: ReturnType<typeof neon>): Promise<void> {
+  if (schemaReady) return;
+  await sql`
+    CREATE TABLE IF NOT EXISTS athletes (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      club TEXT NOT NULL,
+      birth_year INTEGER NOT NULL,
+      contact TEXT NOT NULL UNIQUE,
+      message TEXT,
+      password_hash TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `;
+  schemaReady = true;
+}
+
 async function withPostgres<T>(
-  run: (sql: ReturnType<typeof neon>) => Promise<T>, // neon() client
+  run: (sql: ReturnType<typeof neon>) => Promise<T>,
+  options?: { forSchema?: boolean },
 ): Promise<T> {
-  const dbUrl = getDatabaseUrl();
-  if (!dbUrl) throw new Error("DATABASE_URL is not configured.");
+  const dbUrl = options?.forSchema ? getDirectDatabaseUrl() : getDatabaseUrl();
+  if (!dbUrl) throw new AthleteAuthError(STORAGE_NOT_CONFIGURED);
+
   const sql = neon(dbUrl);
   if (!schemaReady) {
-    await sql`
-      CREATE TABLE IF NOT EXISTS athletes (
-        id TEXT PRIMARY KEY,
-        name TEXT NOT NULL,
-        club TEXT NOT NULL,
-        birth_year INTEGER NOT NULL,
-        contact TEXT NOT NULL UNIQUE,
-        message TEXT,
-        password_hash TEXT NOT NULL,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-      )
-    `;
-    schemaReady = true;
+    const schemaUrl = getDirectDatabaseUrl() ?? dbUrl;
+    const schemaSql = schemaUrl === dbUrl ? sql : neon(schemaUrl);
+    await ensureSchema(schemaSql as ReturnType<typeof neon>);
   }
   return run(sql as ReturnType<typeof neon>);
 }
@@ -100,7 +112,11 @@ export async function registerAthlete(input: RegisterAthleteInput): Promise<Athl
   if (!name || !club || !contact) {
     throw new AthleteAuthError("Name, club, and contact are required.");
   }
-  if (input.birthYear < 1970 || input.birthYear > new Date().getFullYear()) {
+  if (
+    !Number.isFinite(input.birthYear) ||
+    input.birthYear < 1970 ||
+    input.birthYear > new Date().getFullYear()
+  ) {
     throw new AthleteAuthError("Enter a valid birth year.");
   }
   if (input.password.length < 8) {
@@ -120,13 +136,21 @@ export async function registerAthlete(input: RegisterAthleteInput): Promise<Athl
         `;
       });
     } catch (e: unknown) {
+      if (e instanceof AthleteAuthError) throw e;
       const msg = e instanceof Error ? e.message : String(e);
       if (msg.includes("unique") || msg.includes("duplicate")) {
         throw new AthleteAuthError("An account with this contact already exists. Sign in instead.");
       }
-      throw e;
+      console.error("registerAthlete postgres error:", e);
+      throw new AthleteAuthError(
+        "Could not save your registration to the database. Check DATABASE_URL on Vercel and redeploy.",
+      );
     }
     return { id, name, club, birthYear: input.birthYear, contact, message, createdAt };
+  }
+
+  if (isVercelDeployment()) {
+    throw new AthleteAuthError(STORAGE_NOT_CONFIGURED);
   }
 
   const store = await readJsonStore();
@@ -144,7 +168,14 @@ export async function registerAthlete(input: RegisterAthleteInput): Promise<Athl
     createdAt,
   };
   store.push(row);
-  await writeJsonStore(store);
+  try {
+    await writeJsonStore(store);
+  } catch (e) {
+    console.error("registerAthlete file store error:", e);
+    throw new AthleteAuthError(
+      "Could not save your registration locally. Configure DATABASE_URL (Neon/Postgres) for production.",
+    );
+  }
   return rowToPublic(row);
 }
 
