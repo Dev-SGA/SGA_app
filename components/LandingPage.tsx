@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { HeroVideo } from "@/components/HeroVideo";
 import { PitchGraphic, type PitchVariant } from "@/components/PitchGraphic";
-import { RecentTestsPanel } from "@/components/RecentTestsPanel";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { TestCard } from "@/components/TestCard";
@@ -56,8 +55,6 @@ export function LandingPage({ athleteTestSlug }: LandingPageProps) {
           </div>
           <HeroVideo />
         </section>
-
-        <RecentTestsPanel />
 
         <section id="tests" className="section">
           <div className="container">

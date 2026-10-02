@@ -582,71 +582,6 @@ kbd {
   stroke-width: 1.5;
 }
 
-/* ---------- Recent results ---------- */
-
-.recent {
-  margin-top: -40px;
-}
-
-.recent__inner {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 16px 20px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface);
-}
-
-.recent__title {
-  flex: none;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-3);
-}
-
-.recent__list {
-  display: flex;
-  gap: 10px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  overflow-x: auto;
-}
-
-.recent__item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 14px 8px 8px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--surface-2);
-  color: var(--text);
-  white-space: nowrap;
-}
-
-.recent__score {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: var(--accent);
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.recent__text {
-  display: grid;
-  font-size: 13px;
-  line-height: 1.25;
-}
-
-.recent__text span {
-  color: var(--text-3);
-}
-
 /* ---------- Test cards ---------- */
 
 .test-grid {
@@ -2001,11 +1936,6 @@ kbd {
 
   .result__actions {
     justify-content: center;
-  }
-
-  .recent__inner {
-    flex-direction: column;
-    align-items: flex-start;
   }
 
   .admin-panel__toolbar {

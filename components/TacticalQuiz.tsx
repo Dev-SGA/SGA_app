@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { QuestionMediaSlot } from "@/components/QuestionMediaSlot";
-import { appendRecentResult } from "@/lib/activity";
 import { phaseTone, testVisual } from "@/lib/phases";
 import { computeTestResult, RESULT_STORAGE_KEY } from "@/lib/scoring";
 import type { TacticalTest } from "@/lib/tests";
@@ -40,7 +39,6 @@ export function TacticalQuiz({ test }: TacticalQuizProps) {
     const result = computeTestResult(test, answers);
     try {
       sessionStorage.setItem(RESULT_STORAGE_KEY, JSON.stringify(result));
-      appendRecentResult(result);
     } catch {
       /* storage unavailable (private mode) */
     }
