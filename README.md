@@ -40,9 +40,11 @@ Legacy URLs `/resultado` and old Portuguese test slugs redirect via `next.config
 
 ## Athlete accounts & admin
 
-Athletes register at `/register` with **name, club, year of birth, contact**, optional message, and a password. They sign in at `/login` and manage their profile at `/account`.
+Athletes register at `/register` with **name, club, year of birth, position (CB, FB, MF, AMF, WG, ST), contact**, optional message, and a password. Each position maps to a dedicated tactical test. Sign in at `/login`; profile at `/account`.
 
-**Admin:** open `/admin/login` to view all registrations in a table.
+On registration, if contact is an email and `RESEND_API_KEY` + `EMAIL_FROM` are set, the athlete receives SGA product links by email.
+
+**Admin:** open `/admin/login` (credentials hint on page). Default dev login: `admin` / `sga-admin-dev` unless `ADMIN_USERNAME` / `ADMIN_PASSWORD` are set on Vercel.
 
 ### Environment variables (production)
 
