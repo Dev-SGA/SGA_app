@@ -6,13 +6,17 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { TestCard } from "@/components/TestCard";
 import { TACTICAL_CONCEPTS } from "@/lib/concepts";
-import { ATE_FRAMEWORK, HOW_IT_WORKS, PRIMARY_TEST_SLUG } from "@/lib/home";
+import { ATE_FRAMEWORK, HOW_IT_WORKS } from "@/lib/home";
 import { TACTICAL_TESTS } from "@/lib/tests";
 
 const totalScenarios = TACTICAL_TESTS.reduce((sum, t) => sum + t.questions.length, 0);
-const registerForPrimaryTest = `/register?next=${encodeURIComponent(`/tests/${PRIMARY_TEST_SLUG}`)}`;
+type LandingPageProps = {
+  athleteTestSlug?: string;
+};
 
-export function LandingPage() {
+export function LandingPage({ athleteTestSlug }: LandingPageProps) {
+  const registerHref = "/register";
+  const heroTestHref = athleteTestSlug ? `/tests/${athleteTestSlug}` : registerHref;
   return (
     <>
       <SiteHeader />
@@ -24,12 +28,12 @@ export function LandingPage() {
               Train your <span className="hero__accent">tactical brain.</span>
             </h1>
             <p className="hero__lead">
-              Read the game, make better decisions, and get noticed. Register, take a short scenario-based test, see
-              your tactical profile, and connect with SGA Performance.
+              Read the game, make better decisions, and get noticed.               Register with your position (CB, FB, MF, AMF, WG, ST), take your tailored tactical test, and get SGA
+              product recommendations by email.
             </p>
             <div className="hero__ctas">
-              <Link href={registerForPrimaryTest} className="btn btn--primary btn--lg">
-                Register &amp; start test
+              <Link href={heroTestHref} className="btn btn--primary btn--lg">
+                {athleteTestSlug ? "Take my position test" : "Register & start test"}
               </Link>
               <Link href="#tests" className="btn btn--secondary btn--lg">
                 Browse tests
@@ -59,15 +63,15 @@ export function LandingPage() {
           <div className="container">
             <div className="section__head">
               <p className="eyebrow">Choose your test</p>
-              <h2 className="section__title">One test per phase of play</h2>
+              <h2 className="section__title">Position-based tactical tests</h2>
               <p className="section__lead">
-                Each test focuses on a moment of the game. Register once, then open any test — your result is ready
-                instantly.
+                After registration, you take the test mapped to your position. CB and MF scenarios differ — your account
+                unlocks only your assigned test.
               </p>
             </div>
             <div className="test-grid">
               {TACTICAL_TESTS.map((test) => (
-                <TestCard key={test.slug} test={test} />
+                <TestCard key={test.slug} test={test} highlight={athleteTestSlug === test.slug} />
               ))}
             </div>
           </div>
@@ -149,7 +153,7 @@ export function LandingPage() {
                 </p>
               </div>
               <div className="cta-band__actions">
-                <Link href={registerForPrimaryTest} className="btn btn--primary btn--lg">
+                <Link href={registerHref} className="btn btn--primary btn--lg">
                   Register &amp; take a test
                 </Link>
                 <Link href="/login" className="btn btn--ghost btn--lg">

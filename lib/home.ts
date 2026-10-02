@@ -6,12 +6,12 @@ export const HOW_IT_WORKS = [
   {
     number: "01",
     title: "Create your athlete account",
-    body: "Register with your name, club, birth year, and contact so SGA can follow up with you.",
+    body: "Register with name, club, birth year, position (CB–ST), and contact. We email SGA product recommendations.",
   },
   {
     number: "02",
-    title: "Take a tactical test",
-    body: "Answer real match scenarios in about four minutes — one test per phase of play.",
+    title: "Take your position test",
+    body: "Each position gets a dedicated tactical scenario set — about four minutes, tailored to how you play.",
   },
   {
     number: "03",

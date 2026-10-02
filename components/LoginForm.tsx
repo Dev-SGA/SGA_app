@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { PasswordInput } from "@/components/PasswordInput";
 
 type LoginFormProps = {
   redirectTo?: string;
@@ -29,12 +30,12 @@ export function LoginForm({ redirectTo = "/account" }: LoginFormProps) {
           password: String(form.get("password") ?? ""),
         }),
       });
-      const data = (await res.json()) as { ok: boolean; error?: string };
+      const data = (await res.json()) as { ok: boolean; error?: string; redirectTo?: string };
       if (!res.ok || !data.ok) {
         setError(data.error ?? "Sign-in failed.");
         return;
       }
-      router.push(afterAuth);
+      router.push(data.redirectTo ?? afterAuth);
       router.refresh();
     } catch {
       setError("Network error. Try again.");
@@ -49,10 +50,7 @@ export function LoginForm({ redirectTo = "/account" }: LoginFormProps) {
         <span className="field__label">Contact</span>
         <input name="contact" type="text" required autoComplete="username" placeholder="Email or phone number" />
       </label>
-      <label className="field">
-        <span className="field__label">Password</span>
-        <input name="password" type="password" required autoComplete="current-password" />
-      </label>
+      <PasswordInput name="password" label="Password" required autoComplete="current-password" />
 
       {error ? (
         <p className="form__error" role="alert">

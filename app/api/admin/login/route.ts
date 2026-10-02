@@ -5,9 +5,14 @@ import { createSessionToken, sessionCookieOptions } from "@/lib/session";
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as { username?: string; password?: string };
-    const { username, password } = getAdminCredentials();
+    const expected = getAdminCredentials();
+    const username = String(body.username ?? "").trim();
+    const password = String(body.password ?? "");
 
-    if (body.username !== username || body.password !== password) {
+    const userOk = username.toLowerCase() === expected.username.toLowerCase();
+    const passOk = password === expected.password;
+
+    if (!userOk || !passOk) {
       return NextResponse.json({ ok: false, error: "Invalid admin credentials." }, { status: 401 });
     }
 

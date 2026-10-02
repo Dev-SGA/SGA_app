@@ -6,6 +6,7 @@ type SessionPayload = {
   role: SessionRole;
   athleteId?: string;
   name?: string;
+  position?: string;
 };
 
 function secretKey() {
@@ -24,6 +25,7 @@ export async function verifySessionTokenEdge(token: string): Promise<SessionPayl
       role,
       athleteId: typeof payload.athleteId === "string" ? payload.athleteId : undefined,
       name: typeof payload.name === "string" ? payload.name : undefined,
+      position: typeof payload.position === "string" ? payload.position : undefined,
     };
   } catch {
     return null;

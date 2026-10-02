@@ -3,6 +3,7 @@ import { neon } from "@neondatabase/serverless";
 import { promises as fs } from "fs";
 import path from "path";
 import { getDatabaseUrl, getDirectDatabaseUrl, isVercelDeployment } from "@/lib/env";
+import { parseAthletePosition, type AthletePositionId } from "@/lib/positions";
 import { hashPassword, verifyPassword } from "@/lib/password";
 
 export type AthleteRecord = {
@@ -10,6 +11,7 @@ export type AthleteRecord = {
   name: string;
   club: string;
   birthYear: number;
+  position: AthletePositionId;
   contact: string;
   message: string | null;
   createdAt: string;
@@ -38,6 +40,7 @@ async function ensureSchema(sql: ReturnType<typeof neon>): Promise<void> {
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
   `;
+  await sql`ALTER TABLE athletes ADD COLUMN IF NOT EXISTS position TEXT NOT NULL DEFAULT 'MF'`;
   schemaReady = true;
 }
 
@@ -64,7 +67,11 @@ function normalizeContact(contact: string): string {
 async function readJsonStore(): Promise<AthleteRow[]> {
   try {
     const raw = await fs.readFile(JSON_PATH, "utf8");
-    return JSON.parse(raw) as AthleteRow[];
+    const rows = JSON.parse(raw) as (AthleteRow & { position?: string })[];
+    return rows.map((row) => ({
+      ...row,
+      position: parseAthletePosition(row.position ?? "MF") ?? "MF",
+    }));
   } catch {
     return [];
   }
@@ -81,6 +88,7 @@ function rowToPublic(row: AthleteRow): AthleteRecord {
     name: row.name,
     club: row.club,
     birthYear: row.birthYear,
+    position: row.position,
     contact: row.contact,
     message: row.message,
     createdAt: row.createdAt,
@@ -91,6 +99,7 @@ export type RegisterAthleteInput = {
   name: string;
   club: string;
   birthYear: number;
+  position: string;
   contact: string;
   message?: string;
   password: string;
@@ -108,9 +117,13 @@ export async function registerAthlete(input: RegisterAthleteInput): Promise<Athl
   const club = input.club.trim();
   const contact = normalizeContact(input.contact);
   const message = input.message?.trim() || null;
+  const position = parseAthletePosition(input.position);
 
   if (!name || !club || !contact) {
     throw new AthleteAuthError("Name, club, and contact are required.");
+  }
+  if (!position) {
+    throw new AthleteAuthError("Select a valid position (CB, FB, MF, AMF, WG, ST).");
   }
   if (
     !Number.isFinite(input.birthYear) ||
@@ -131,8 +144,8 @@ export async function registerAthlete(input: RegisterAthleteInput): Promise<Athl
     try {
       await withPostgres(async (sql) => {
         await sql`
-          INSERT INTO athletes (id, name, club, birth_year, contact, message, password_hash, created_at)
-          VALUES (${id}, ${name}, ${club}, ${input.birthYear}, ${contact}, ${message}, ${passwordHash}, ${createdAt})
+          INSERT INTO athletes (id, name, club, birth_year, position, contact, message, password_hash, created_at)
+          VALUES (${id}, ${name}, ${club}, ${input.birthYear}, ${position}, ${contact}, ${message}, ${passwordHash}, ${createdAt})
         `;
       });
     } catch (e: unknown) {
@@ -146,7 +159,7 @@ export async function registerAthlete(input: RegisterAthleteInput): Promise<Athl
         "Could not save your registration to the database. Check DATABASE_URL on Vercel and redeploy.",
       );
     }
-    return { id, name, club, birthYear: input.birthYear, contact, message, createdAt };
+    return { id, name, club, birthYear: input.birthYear, position, contact, message, createdAt };
   }
 
   if (isVercelDeployment()) {
@@ -162,6 +175,7 @@ export async function registerAthlete(input: RegisterAthleteInput): Promise<Athl
     name,
     club,
     birthYear: input.birthYear,
+    position,
     contact,
     message,
     passwordHash,
@@ -186,14 +200,16 @@ export async function authenticateAthlete(
   const normalized = normalizeContact(contact);
   if (getDatabaseUrl()) {
     const rows = (await withPostgres((sql) => sql`
-      SELECT id, name, club, birth_year AS "birthYear", contact, message,
+      SELECT id, name, club, birth_year AS "birthYear", position, contact, message,
              password_hash AS "passwordHash", created_at AS "createdAt"
       FROM athletes WHERE contact = ${normalized} LIMIT 1
     `)) as AthleteRow[];
     const row = rows[0];
     if (!row) return null;
     const ok = await verifyPassword(password, row.passwordHash);
-    return ok ? rowToPublic(row) : null;
+    if (!ok) return null;
+    row.position = parseAthletePosition(row.position) ?? "MF";
+    return rowToPublic(row);
   }
 
   const store = await readJsonStore();
@@ -206,10 +222,13 @@ export async function authenticateAthlete(
 export async function listAthletes(): Promise<AthleteRecord[]> {
   if (getDatabaseUrl()) {
     const rows = (await withPostgres((sql) => sql`
-      SELECT id, name, club, birth_year AS "birthYear", contact, message, created_at AS "createdAt"
+      SELECT id, name, club, birth_year AS "birthYear", position, contact, message, created_at AS "createdAt"
       FROM athletes ORDER BY created_at DESC
     `)) as AthleteRecord[];
-    return rows;
+    return rows.map((row) => ({
+      ...row,
+      position: parseAthletePosition(row.position) ?? "MF",
+    }));
   }
   const store = await readJsonStore();
   return store.map(rowToPublic).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
@@ -218,10 +237,12 @@ export async function listAthletes(): Promise<AthleteRecord[]> {
 export async function getAthleteById(id: string): Promise<AthleteRecord | null> {
   if (getDatabaseUrl()) {
     const rows = (await withPostgres((sql) => sql`
-      SELECT id, name, club, birth_year AS "birthYear", contact, message, created_at AS "createdAt"
+      SELECT id, name, club, birth_year AS "birthYear", position, contact, message, created_at AS "createdAt"
       FROM athletes WHERE id = ${id} LIMIT 1
     `)) as AthleteRecord[];
-    return rows[0] ?? null;
+    const row = rows[0];
+    if (!row) return null;
+    return { ...row, position: parseAthletePosition(row.position) ?? "MF" };
   }
   const store = await readJsonStore();
   const row = store.find((a) => a.id === id);

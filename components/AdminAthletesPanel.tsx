@@ -31,7 +31,9 @@ export function AdminAthletesPanel() {
     const q = query.trim().toLowerCase();
     if (!q) return athletes;
     return athletes.filter((a) =>
-      [a.name, a.club, a.contact, String(a.birthYear), a.message ?? ""].some((v) => v.toLowerCase().includes(q)),
+      [a.name, a.club, a.position, a.contact, String(a.birthYear), a.message ?? ""].some((v) =>
+        v.toLowerCase().includes(q),
+      ),
     );
   }, [athletes, query]);
 
@@ -99,6 +101,7 @@ export function AdminAthletesPanel() {
               <tr>
                 <th>Athlete</th>
                 <th>Club</th>
+                <th>Pos.</th>
                 <th>Born</th>
                 <th>Contact</th>
                 <th>Message</th>
@@ -110,6 +113,7 @@ export function AdminAthletesPanel() {
                 <tr key={a.id}>
                   <td className="table__strong">{a.name}</td>
                   <td>{a.club}</td>
+                  <td>{a.position}</td>
                   <td>{a.birthYear}</td>
                   <td>
                     <a href={contactHref(a.contact)}>{a.contact}</a>
@@ -139,11 +143,13 @@ function contactHref(contact: string): string {
 }
 
 function exportCsv(rows: AthleteRecord[]) {
-  const header = ["Name", "Club", "Birth year", "Contact", "Message", "Registered"];
+  const header = ["Name", "Club", "Position", "Birth year", "Contact", "Message", "Registered"];
   const escape = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
   const lines = [
     header.map(escape).join(","),
-    ...rows.map((a) => [a.name, a.club, a.birthYear, a.contact, a.message, a.createdAt].map(escape).join(",")),
+    ...rows.map((a) =>
+      [a.name, a.club, a.position, a.birthYear, a.contact, a.message, a.createdAt].map(escape).join(","),
+    ),
   ];
   const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);

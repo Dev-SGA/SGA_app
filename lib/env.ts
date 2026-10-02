@@ -45,7 +45,7 @@ export function getSessionSecret(): string {
 
 export function getAdminCredentials(): { username: string; password: string } {
   return {
-    username: process.env.ADMIN_USERNAME ?? "admin",
+    username: (process.env.ADMIN_USERNAME ?? "admin").trim(),
     password: process.env.ADMIN_PASSWORD ?? "sga-admin-dev",
   };
 }

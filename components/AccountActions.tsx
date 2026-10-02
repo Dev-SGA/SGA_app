@@ -2,7 +2,11 @@
 
 import Link from "next/link";
 
-export function AccountActions() {
+type AccountActionsProps = {
+  testHref: string;
+};
+
+export function AccountActions({ testHref }: AccountActionsProps) {
   async function signOut() {
     await fetch("/api/auth/logout", { method: "POST" });
     window.location.href = "/";
@@ -10,8 +14,8 @@ export function AccountActions() {
 
   return (
     <div className="account-actions">
-      <Link href="/#tests" className="btn btn--primary btn--block">
-        Take a tactical test
+      <Link href={testHref} className="btn btn--primary btn--block">
+        Take my position test
       </Link>
       <div className="account-actions__row">
         <a href="https://sgaperformance.com" className="btn btn--secondary" target="_blank" rel="noopener noreferrer">

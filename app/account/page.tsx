@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { AccountActions } from "@/components/AccountActions";
 import { AuthShell } from "@/components/AuthShell";
 import { getAthleteById } from "@/lib/athletes";
+import { positionLabel, testSlugForPosition } from "@/lib/positions";
 import { getSession } from "@/lib/session";
 
 export default async function AccountPage() {
@@ -30,6 +31,10 @@ export default async function AccountPage() {
           <dd>{athlete.club}</dd>
         </div>
         <div>
+          <dt>Position</dt>
+          <dd>{positionLabel(athlete.position)}</dd>
+        </div>
+        <div>
           <dt>Year of birth</dt>
           <dd>{athlete.birthYear}</dd>
         </div>
@@ -44,7 +49,7 @@ export default async function AccountPage() {
           </div>
         ) : null}
       </dl>
-      <AccountActions />
+      <AccountActions testHref={`/tests/${testSlugForPosition(athlete.position)}`} />
     </AuthShell>
   );
 }

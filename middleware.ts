@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { testSlugForPosition, parseAthletePosition } from "@/lib/positions";
 import { verifySessionTokenEdge } from "@/lib/session-verify";
 
 function redirectToRegister(request: NextRequest) {
@@ -22,6 +23,17 @@ export async function middleware(request: NextRequest) {
   if (isTestRoute || isResultRoute) {
     if (!session || session.role !== "athlete") {
       return redirectToRegister(request);
+    }
+
+    if (isTestRoute && session.position) {
+      const position = parseAthletePosition(session.position);
+      if (position) {
+        const allowedSlug = testSlugForPosition(position);
+        const slug = pathname.replace(/^\/tests\//, "");
+        if (slug && slug !== allowedSlug) {
+          return NextResponse.redirect(new URL(`/tests/${allowedSlug}`, request.url));
+        }
+      }
     }
   }
 

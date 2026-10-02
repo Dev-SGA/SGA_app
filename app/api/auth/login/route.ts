@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { authenticateAthlete } from "@/lib/athletes";
+import { testSlugForPosition } from "@/lib/positions";
 import { createSessionToken, sessionCookieOptions } from "@/lib/session";
 
 export async function POST(request: Request) {
@@ -14,9 +15,14 @@ export async function POST(request: Request) {
       role: "athlete",
       athleteId: athlete.id,
       name: athlete.name,
+      position: athlete.position,
     });
 
-    const response = NextResponse.json({ ok: true, athlete });
+    const response = NextResponse.json({
+      ok: true,
+      athlete,
+      redirectTo: `/tests/${testSlugForPosition(athlete.position)}`,
+    });
     response.cookies.set(sessionCookieOptions(token));
     return response;
   } catch (e) {

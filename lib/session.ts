@@ -8,6 +8,7 @@ export type SessionPayload = {
   role: SessionRole;
   athleteId?: string;
   name?: string;
+  position?: string;
 };
 
 const COOKIE_NAME = "sga_session";
@@ -34,6 +35,7 @@ export async function verifySessionToken(token: string): Promise<SessionPayload 
       role,
       athleteId: typeof payload.athleteId === "string" ? payload.athleteId : undefined,
       name: typeof payload.name === "string" ? payload.name : undefined,
+      position: typeof payload.position === "string" ? payload.position : undefined,
     };
   } catch {
     return null;

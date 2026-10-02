@@ -17,7 +17,7 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
       subtitle={
         needsTestAccess
           ? "Create your account to take the tactical test — we’ll send you straight to it after sign-up."
-          : "Create your account so SGA Performance can follow up with you."
+          : "Create your account with your position. We email SGA product recommendations when you use an email contact."
       }
     >
       <RegisterForm redirectTo={redirectTo} />

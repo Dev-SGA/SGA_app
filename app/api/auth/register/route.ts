@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { AthleteAuthError, registerAthlete } from "@/lib/athletes";
+import { sendRegistrationEmails } from "@/lib/email";
+import { testSlugForPosition } from "@/lib/positions";
 import { createSessionToken, sessionCookieOptions } from "@/lib/session";
 
 export async function POST(request: Request) {
@@ -8,6 +10,7 @@ export async function POST(request: Request) {
       name?: string;
       club?: string;
       birthYear?: number;
+      position?: string;
       contact?: string;
       message?: string;
       password?: string;
@@ -17,6 +20,7 @@ export async function POST(request: Request) {
       name: body.name ?? "",
       club: body.club ?? "",
       birthYear: Number(body.birthYear),
+      position: body.position ?? "",
       contact: body.contact ?? "",
       message: body.message,
       password: body.password ?? "",
@@ -26,9 +30,17 @@ export async function POST(request: Request) {
       role: "athlete",
       athleteId: athlete.id,
       name: athlete.name,
+      position: athlete.position,
     });
 
-    const response = NextResponse.json({ ok: true, athlete });
+    void sendRegistrationEmails(athlete).catch((e) => console.error("registration email:", e));
+
+    const testSlug = testSlugForPosition(athlete.position);
+    const response = NextResponse.json({
+      ok: true,
+      athlete,
+      redirectTo: `/tests/${testSlug}`,
+    });
     response.cookies.set(sessionCookieOptions(token));
     return response;
   } catch (e) {

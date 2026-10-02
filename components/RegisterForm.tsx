@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { PasswordInput } from "@/components/PasswordInput";
+import { ATHLETE_POSITIONS } from "@/lib/positions";
 
 type RegisterFormProps = {
   redirectTo?: string;
@@ -35,17 +37,18 @@ export function RegisterForm({ redirectTo = "/account" }: RegisterFormProps) {
           name: String(form.get("name") ?? ""),
           club: String(form.get("club") ?? ""),
           birthYear: Number(form.get("birthYear")),
+          position: String(form.get("position") ?? ""),
           contact: String(form.get("contact") ?? ""),
           message: String(form.get("message") ?? ""),
           password,
         }),
       });
-      const data = (await res.json()) as { ok: boolean; error?: string };
+      const data = (await res.json()) as { ok: boolean; error?: string; redirectTo?: string };
       if (!res.ok || !data.ok) {
         setError(data.error ?? "Registration failed.");
         return;
       }
-      router.push(afterAuth);
+      router.push(data.redirectTo ?? afterAuth);
       router.refresh();
     } catch {
       setError("Network error. Try again.");
@@ -73,27 +76,44 @@ export function RegisterForm({ redirectTo = "/account" }: RegisterFormProps) {
       </div>
 
       <label className="field">
+        <span className="field__label">Position</span>
+        <select name="position" required defaultValue="">
+          <option value="" disabled>
+            Select your position
+          </option>
+          {ATHLETE_POSITIONS.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.label}
+            </option>
+          ))}
+        </select>
+        <span className="field__hint">Your tactical test is tailored to this position.</span>
+      </label>
+
+      <label className="field">
         <span className="field__label">Contact</span>
         <input name="contact" type="text" required autoComplete="email" placeholder="Email or phone number" />
-        <span className="field__hint">You&apos;ll use this to sign in. SGA will reach you here.</span>
+        <span className="field__hint">
+          Use an email to receive SGA product recommendations after sign-up. You&apos;ll also use this to sign in.
+        </span>
       </label>
 
       <label className="field">
         <span className="field__label">
           Message <em>optional</em>
         </span>
-        <textarea name="message" rows={3} placeholder="Position, goals, or how SGA can help you" />
+        <textarea name="message" rows={3} placeholder="Goals or how SGA can help you" />
       </label>
 
       <div className="form__row">
-        <label className="field">
-          <span className="field__label">Password</span>
-          <input name="password" type="password" required minLength={8} autoComplete="new-password" />
-        </label>
-        <label className="field">
-          <span className="field__label">Confirm password</span>
-          <input name="confirmPassword" type="password" required minLength={8} autoComplete="new-password" />
-        </label>
+        <PasswordInput name="password" label="Password" required minLength={8} autoComplete="new-password" />
+        <PasswordInput
+          name="confirmPassword"
+          label="Confirm password"
+          required
+          minLength={8}
+          autoComplete="new-password"
+        />
       </div>
 
       {error ? (
