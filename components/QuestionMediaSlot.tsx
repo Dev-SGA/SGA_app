@@ -1,40 +1,25 @@
+import { PitchGraphic, type PitchVariant } from "@/components/PitchGraphic";
 import type { QuestionMedia } from "@/lib/tests";
 
 type QuestionMediaSlotProps = {
   media?: QuestionMedia;
-  phase: string;
-  index: number;
-  total: number;
+  variant: PitchVariant;
 };
 
-export function QuestionMediaSlot({ media, phase, index, total }: QuestionMediaSlotProps) {
-  const caption = media?.caption ?? "Situation diagram / video — coming soon";
-
+export function QuestionMediaSlot({ media, variant }: QuestionMediaSlotProps) {
   if (media?.videoSrc) {
     return (
       <figure className="quiz-media">
-        <video
-          className="quiz-media__video"
-          controls
-          playsInline
-          preload="metadata"
-          poster={media.poster}
-          src={media.videoSrc}
-        />
-        <figcaption className="quiz-media__caption">{caption}</figcaption>
+        <video controls playsInline preload="metadata" poster={media.poster} src={media.videoSrc} />
+        {media.caption ? <figcaption>{media.caption}</figcaption> : null}
       </figure>
     );
   }
 
   return (
-    <figure className="quiz-media quiz-media--placeholder">
-      <div className="quiz-media__diagram" aria-hidden="true">
-        <span className="quiz-media__phase">{phase}</span>
-        <span className="quiz-media__count">
-          {index + 1}/{total}
-        </span>
-      </div>
-      <figcaption className="quiz-media__caption">{caption}</figcaption>
+    <figure className="quiz-media">
+      <PitchGraphic variant={variant} label="Situation diagram" />
+      <figcaption>Illustrative diagram · match footage coming soon</figcaption>
     </figure>
   );
 }

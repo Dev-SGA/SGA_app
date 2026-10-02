@@ -1,5 +1,5 @@
-import { SiteShell } from "@/components/SiteShell";
 import { ResultView } from "@/components/ResultView";
+import { SiteShell } from "@/components/SiteShell";
 
 type ResultPageProps = {
   searchParams: Promise<{ test?: string }>;
@@ -11,8 +11,8 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
   return (
     <SiteShell
       eyebrow="Your result"
-      title="Profile & products"
-      meta="Use this summary with the SGA team or in your scouting materials."
+      title="Tactical profile"
+      meta="Your score reflects the quality of your decisions across every scenario in this test."
     >
       <ResultView testSlug={test} />
     </SiteShell>

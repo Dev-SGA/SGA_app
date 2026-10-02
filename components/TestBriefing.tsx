@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { PitchGraphic } from "@/components/PitchGraphic";
+import { phaseTone, testVisual } from "@/lib/phases";
 import type { TacticalTest } from "@/lib/tests";
 
 type TestBriefingProps = {
@@ -10,51 +12,46 @@ type TestBriefingProps = {
 
 export function TestBriefing({ test, onStart }: TestBriefingProps) {
   return (
-    <div className="test-brief">
-      <p className="test-brief__eyebrow">Before you begin</p>
-      <h1 className="test-brief__title">{test.title}</h1>
-      <p className="test-brief__meta">
-        {test.questions.length} scenarios · ~{test.durationMinutes} minutes · {test.phase}
-      </p>
-
-      <div className="card test-brief__rules">
-        <ul className="test-brief__list" role="list">
-          <li>
-            <span className="test-brief__icon test-brief__icon--warn" aria-hidden="true">
-              !
-            </span>
-            <div>
-              <strong>Read each scenario carefully</strong>
-              <span>Every question simulates a match moment. Videos and diagrams will be added soon.</span>
-            </div>
-          </li>
-          <li>
-            <span className="test-brief__icon test-brief__icon--warn" aria-hidden="true">
-              !
-            </span>
-            <div>
-              <strong>Don&apos;t leave mid-test</strong>
-              <span>Closing or refreshing the tab may reset your progress for this attempt.</span>
-            </div>
-          </li>
-          <li>
-            <span className="test-brief__icon test-brief__icon--ok" aria-hidden="true">
-              ~
-            </span>
-            <div>
-              <strong>Set aside {test.durationMinutes} minutes</strong>
-              <span>At the end you&apos;ll see your score, tactical profile, and recommended SGA products.</span>
-            </div>
-          </li>
-        </ul>
+    <div className="brief">
+      <div className="brief__visual">
+        <PitchGraphic variant={testVisual(test.slug)} label={`${test.title} diagram`} />
       </div>
 
-      <button type="button" className="btn btn--primary btn--lg btn--block" onClick={onStart}>
-        I&apos;m ready — start the test
-      </button>
-      <Link href="/" className="test-brief__back landing-text-link">
-        ← Go back
-      </Link>
+      <div className="brief__body">
+        <span className={`chip chip--${phaseTone(test.phase)}`}>{test.phase}</span>
+        <h1 className="brief__title">{test.title}</h1>
+        <p className="brief__intro">{test.intro}</p>
+
+        <ul className="brief__facts" role="list">
+          <li>
+            <strong>{test.questions.length}</strong>
+            <span>scenarios</span>
+          </li>
+          <li>
+            <strong>~{test.durationMinutes}</strong>
+            <span>minutes</span>
+          </li>
+          <li>
+            <strong>Free</strong>
+            <span>instant result</span>
+          </li>
+        </ul>
+
+        <ul className="brief__tips" role="list">
+          <li>Read each scenario carefully — pick the action you would make in the match.</li>
+          <li>Use keys A, B, C to answer and Enter to continue.</li>
+          <li>Refreshing the page restarts the test.</li>
+        </ul>
+
+        <div className="brief__actions">
+          <button type="button" className="btn btn--primary btn--lg" onClick={onStart}>
+            Start the test
+          </button>
+          <Link href="/#tests" className="btn btn--ghost btn--lg">
+            Other tests
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

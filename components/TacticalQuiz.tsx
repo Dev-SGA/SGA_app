@@ -2,11 +2,14 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
-import { appendRecentResult } from "@/lib/activity";
+import { useEffect, useState } from "react";
 import { QuestionMediaSlot } from "@/components/QuestionMediaSlot";
+import { appendRecentResult } from "@/lib/activity";
+import { phaseTone, testVisual } from "@/lib/phases";
 import { computeTestResult, RESULT_STORAGE_KEY } from "@/lib/scoring";
 import type { TacticalTest } from "@/lib/tests";
+
+const LETTERS = ["A", "B", "C", "D", "E"];
 
 type TacticalQuizProps = {
   test: TacticalTest;
@@ -17,18 +20,11 @@ export function TacticalQuiz({ test }: TacticalQuizProps) {
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
 
+  const total = test.questions.length;
   const question = test.questions[index];
-  const progress = ((index + 1) / test.questions.length) * 100;
   const selected = question ? answers[question.id] : undefined;
-
-  const canAdvance = Boolean(selected);
-
-  const stepLabel = useMemo(
-    () => `${test.phase} · ${index + 1} of ${test.questions.length}`,
-    [index, test.questions.length, test.phase],
-  );
-
-  const optionLetters = ["A", "B", "C", "D", "E"];
+  const isLast = index === total - 1;
+  const progress = ((index + (selected ? 1 : 0)) / total) * 100;
 
   function choose(optionId: string) {
     if (!question) return;
@@ -36,18 +32,17 @@ export function TacticalQuiz({ test }: TacticalQuizProps) {
   }
 
   function goNext() {
-    if (!canAdvance) return;
-    if (index < test.questions.length - 1) {
+    if (!selected) return;
+    if (!isLast) {
       setIndex((i) => i + 1);
       return;
     }
-
     const result = computeTestResult(test, answers);
     try {
       sessionStorage.setItem(RESULT_STORAGE_KEY, JSON.stringify(result));
       appendRecentResult(result);
     } catch {
-      /* ignore quota / private mode */
+      /* storage unavailable (private mode) */
     }
     router.push(`/result?test=${test.slug}`);
   }
@@ -56,72 +51,89 @@ export function TacticalQuiz({ test }: TacticalQuizProps) {
     if (index > 0) setIndex((i) => i - 1);
   }
 
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      const target = e.target as HTMLElement | null;
+      if (target && ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return;
+      if (!question) return;
+
+      const key = e.key.toLowerCase();
+      const pick = Math.max(["a", "b", "c", "d", "e"].indexOf(key), ["1", "2", "3", "4", "5"].indexOf(key));
+      if (pick >= 0 && question.options[pick]) {
+        choose(question.options[pick].id);
+        return;
+      }
+      // Enter on a focused button already fires its click handler.
+      if (e.key === "Enter" && target?.tagName !== "BUTTON") goNext();
+      if (e.key === "ArrowLeft") goBack();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
   if (!question) {
     return (
-      <p className="test-empty">
-        This test has no questions yet.{" "}
-        <Link href="/">Back to home</Link>
+      <p className="empty-state">
+        This test has no questions yet. <Link href="/">Back to home</Link>
       </p>
     );
   }
 
   return (
-    <div className="quiz quiz--immersive">
-      <header className="quiz__header">
-        <p className="quiz__part">Tactical test · {test.title}</p>
-        <p className="quiz__step">{stepLabel}</p>
+    <div className="quiz">
+      <div className="quiz__progress">
+        <div className="quiz__progress-row">
+          <span className={`chip chip--${phaseTone(test.phase)}`}>{test.phase}</span>
+          <span className="quiz__counter">
+            Question <strong>{index + 1}</strong> of {total}
+          </span>
+        </div>
         <div
-          className="quiz__progress"
+          className="progress"
           role="progressbar"
           aria-valuenow={Math.round(progress)}
           aria-valuemin={0}
           aria-valuemax={100}
         >
-          <span className="quiz__progress-fill" style={{ width: `${progress}%` }} />
+          <span className="progress__fill" style={{ width: `${progress}%` }} />
         </div>
-      </header>
+      </div>
 
-      <QuestionMediaSlot
-        media={question.media}
-        phase={test.phase}
-        index={index}
-        total={test.questions.length}
-      />
+      <div className="quiz__grid">
+        <QuestionMediaSlot media={question.media} variant={testVisual(test.slug)} />
 
-      <section className="quiz__panel">
-        <p className="quiz__scenario">{question.scenario}</p>
-        <h2 className="quiz__prompt">{question.prompt}</h2>
+        <section className="quiz__panel" aria-live="polite">
+          <p className="quiz__scenario">{question.scenario}</p>
+          <h2 className="quiz__prompt">{question.prompt}</h2>
 
-        <ul className="quiz__options" role="list">
-          {question.options.map((opt, optIndex) => {
-            const isSelected = selected === opt.id;
-            const letter = optionLetters[optIndex] ?? "?";
-            return (
-              <li key={opt.id}>
-                <button
-                  type="button"
-                  className={`quiz__option${isSelected ? " is-selected" : ""}`}
-                  onClick={() => choose(opt.id)}
-                  aria-pressed={isSelected}
-                >
-                  <span className="quiz__option-badge" aria-hidden="true">
-                    {letter}
-                  </span>
-                  <span className="quiz__option-label">{opt.label}</span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
+          <ul className="options" role="list">
+            {question.options.map((opt, i) => {
+              const isSelected = selected === opt.id;
+              return (
+                <li key={opt.id}>
+                  <button
+                    type="button"
+                    className={`option${isSelected ? " is-selected" : ""}`}
+                    onClick={() => choose(opt.id)}
+                    aria-pressed={isSelected}
+                  >
+                    <kbd className="option__key">{LETTERS[i]}</kbd>
+                    <span className="option__label">{opt.label}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
 
-      <div className="quiz__actions">
-        <button type="button" className="btn btn--ghost" onClick={goBack} disabled={index === 0}>
-          Previous
-        </button>
-        <button type="button" className="btn btn--primary" onClick={goNext} disabled={!canAdvance}>
-          {index === test.questions.length - 1 ? "View result" : "Next"}
-        </button>
+          <div className="quiz__nav">
+            <button type="button" className="btn btn--ghost" onClick={goBack} disabled={index === 0}>
+              ← Back
+            </button>
+            <button type="button" className="btn btn--primary" onClick={goNext} disabled={!selected}>
+              {isLast ? "See my result" : "Next question"}
+            </button>
+          </div>
+        </section>
       </div>
     </div>
   );

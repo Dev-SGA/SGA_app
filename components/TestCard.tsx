@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { PitchGraphic } from "@/components/PitchGraphic";
+import { phaseTone, testVisual } from "@/lib/phases";
 import type { TacticalTest } from "@/lib/tests";
 
 type TestCardProps = {
@@ -7,17 +9,24 @@ type TestCardProps = {
 
 export function TestCard({ test }: TestCardProps) {
   return (
-    <article className="test-card">
-      <p className="test-card__phase">{test.phase}</p>
-      <h2 className="test-card__title">{test.title}</h2>
-      <p className="test-card__intro">{test.intro}</p>
-      <div className="test-card__meta">
-        <span>{test.questions.length} scenarios</span>
-        <span>~{test.durationMinutes} min</span>
+    <Link href={`/tests/${test.slug}`} className="test-card">
+      <div className="test-card__visual">
+        <PitchGraphic variant={testVisual(test.slug)} label={`${test.title} diagram`} />
       </div>
-      <Link href={`/tests/${test.slug}`} className="btn btn--primary test-card__cta">
-        Start test
-      </Link>
-    </article>
+      <div className="test-card__body">
+        <div className="test-card__meta">
+          <span className={`chip chip--${phaseTone(test.phase)}`}>{test.phase}</span>
+          <span className="test-card__duration">~{test.durationMinutes} min</span>
+        </div>
+        <h3 className="test-card__title">{test.title}</h3>
+        <p className="test-card__intro">{test.intro}</p>
+        <div className="test-card__footer">
+          <span>{test.questions.length} scenarios</span>
+          <span className="test-card__arrow" aria-hidden="true">
+            →
+          </span>
+        </div>
+      </div>
+    </Link>
   );
 }

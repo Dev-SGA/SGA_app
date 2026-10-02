@@ -1,25 +1,21 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { PitchGraphic } from "@/components/PitchGraphic";
 
 type HeroVideoProps = {
   poster?: string;
+  /** Set to a file under public/media once the intro video is ready. */
   videoSrc?: string;
-  caption?: string;
 };
 
-/** Hero video slot — set `videoSrc` under public/media when ready. */
-export function HeroVideo({
-  poster = "/media/hero-poster.jpg",
-  videoSrc,
-  caption = "See the game through the SGA tactical lens.",
-}: HeroVideoProps) {
+export function HeroVideo({ poster, videoSrc }: HeroVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
 
   function togglePlay() {
     const el = videoRef.current;
-    if (!el || !videoSrc) return;
+    if (!el) return;
     if (el.paused) {
       void el.play();
       setPlaying(true);
@@ -30,38 +26,32 @@ export function HeroVideo({
   }
 
   return (
-    <div className="hero-video">
-      <figure className="hero-video__frame">
+    <div className="hero-visual">
+      <div className="hero-visual__frame">
         {videoSrc ? (
-          <video
-            ref={videoRef}
-            className="hero-video__el"
-            loop
-            muted
-            playsInline
-            preload="metadata"
-            poster={poster}
-            src={videoSrc}
-          />
-        ) : (
-          <div className="hero-video__placeholder" role="img" aria-label="Tactical video preview — coming soon">
-            <span className="hero-video__placeholder-icon" aria-hidden="true">
-              ▶
-            </span>
-            <p>Intro video in production</p>
-          </div>
-        )}
-        <figcaption className="hero-video__caption">
-          <span>{caption}</span>
-          {videoSrc ? (
-            <button type="button" className="hero-video__play" onClick={togglePlay}>
+          <>
+            <video ref={videoRef} loop muted playsInline preload="metadata" poster={poster} src={videoSrc} />
+            <button type="button" className="hero-visual__play" onClick={togglePlay}>
               {playing ? "Pause" : "Play video"}
             </button>
-          ) : (
-            <span className="hero-video__soon">Coming soon</span>
-          )}
-        </figcaption>
-      </figure>
+          </>
+        ) : (
+          <PitchGraphic variant="hero" label="Build-up structure with a pass into the half-space" />
+        )}
+      </div>
+
+      <div className="hero-visual__chip hero-visual__chip--score" aria-hidden="true">
+        <span className="hero-visual__chip-label">Decision quality</span>
+        <span className="hero-visual__chip-value">
+          88<small>/100</small>
+        </span>
+      </div>
+      <div className="hero-visual__chip hero-visual__chip--profile" aria-hidden="true">
+        <span className="hero-visual__dot" />
+        <span>
+          Profile · <strong>Game reader</strong>
+        </span>
+      </div>
     </div>
   );
 }

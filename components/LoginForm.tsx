@@ -15,16 +15,14 @@ export function LoginForm() {
     setLoading(true);
 
     const form = new FormData(e.currentTarget);
-    const payload = {
-      contact: String(form.get("contact") ?? ""),
-      password: String(form.get("password") ?? ""),
-    };
-
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          contact: String(form.get("contact") ?? ""),
+          password: String(form.get("password") ?? ""),
+        }),
       });
       const data = (await res.json()) as { ok: boolean; error?: string };
       if (!res.ok || !data.ok) {
@@ -41,31 +39,28 @@ export function LoginForm() {
   }
 
   return (
-    <form className="auth-form" onSubmit={onSubmit}>
-      <label className="auth-field">
-        <span>Contact (email or phone)</span>
-        <input name="contact" type="text" required autoComplete="username" />
+    <form className="form" onSubmit={onSubmit}>
+      <label className="field">
+        <span className="field__label">Contact</span>
+        <input name="contact" type="text" required autoComplete="username" placeholder="Email or phone number" />
       </label>
-      <label className="auth-field">
-        <span>Password</span>
+      <label className="field">
+        <span className="field__label">Password</span>
         <input name="password" type="password" required autoComplete="current-password" />
       </label>
 
       {error ? (
-        <p className="auth-form__error" role="alert">
+        <p className="form__error" role="alert">
           {error}
         </p>
       ) : null}
 
-      <button type="submit" className="btn btn--primary btn--block" disabled={loading}>
+      <button type="submit" className="btn btn--primary btn--lg btn--block" disabled={loading}>
         {loading ? "Signing in…" : "Sign in"}
       </button>
 
-      <p className="auth-form__footer">
-        New athlete?{" "}
-        <Link href="/register" className="landing-text-link">
-          Create an account
-        </Link>
+      <p className="form__footer">
+        New athlete? <Link href="/register">Create an account</Link>
       </p>
     </form>
   );

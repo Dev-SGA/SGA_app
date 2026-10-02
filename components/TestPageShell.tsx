@@ -3,21 +3,25 @@ import { SgaLogo } from "@/components/SgaLogo";
 import { BRAND } from "@/lib/brand";
 
 type TestPageShellProps = {
+  title: string;
   children: React.ReactNode;
 };
 
-export function TestPageShell({ children }: TestPageShellProps) {
+export function TestPageShell({ title, children }: TestPageShellProps) {
   return (
-    <div className="test-page">
-      <div className="test-page__top">
-        <Link href="/" className="test-page__logo" aria-label={`${BRAND.name} — home`}>
-          <SgaLogo variant="symbol" size="md" />
-        </Link>
-        <Link href="/" className="landing-text-link">
-          Home
-        </Link>
-      </div>
-      <div className="test-page__content">{children}</div>
+    <div className="test-layout">
+      <header className="test-topbar">
+        <div className="container test-topbar__inner">
+          <Link href="/" className="test-topbar__logo" aria-label={`${BRAND.name} — home`}>
+            <SgaLogo variant="horizontal" size="xs" />
+          </Link>
+          <p className="test-topbar__title">{title}</p>
+          <Link href="/" className="test-topbar__exit">
+            Exit
+          </Link>
+        </div>
+      </header>
+      <main className="container test-main">{children}</main>
     </div>
   );
 }

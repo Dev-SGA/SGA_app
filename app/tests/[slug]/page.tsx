@@ -13,7 +13,7 @@ export default async function TestPage({ params }: TestPageProps) {
   if (!test) notFound();
 
   return (
-    <TestPageShell>
+    <TestPageShell title={test.title}>
       <TestFlow test={test} />
     </TestPageShell>
   );

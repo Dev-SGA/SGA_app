@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { AthleteRecord } from "@/lib/athletes";
 
 export function AdminAthletesPanel() {
   const [athletes, setAthletes] = useState<AthleteRecord[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     void (async () => {
@@ -26,56 +27,101 @@ export function AdminAthletesPanel() {
     })();
   }, []);
 
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return athletes;
+    return athletes.filter((a) =>
+      [a.name, a.club, a.contact, String(a.birthYear), a.message ?? ""].some((v) => v.toLowerCase().includes(q)),
+    );
+  }, [athletes, query]);
+
+  const clubs = useMemo(() => new Set(athletes.map((a) => a.club.toLowerCase())).size, [athletes]);
+  const lastWeek = useMemo(() => {
+    const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    return athletes.filter((a) => new Date(a.createdAt).getTime() >= cutoff).length;
+  }, [athletes]);
+
   async function signOut() {
     await fetch("/api/auth/logout", { method: "POST" });
     window.location.href = "/admin/login";
   }
 
-  if (loading) {
-    return <p className="auth-form__hint">Loading registrations…</p>;
-  }
-
-  if (error) {
-    return <p className="auth-form__error">{error}</p>;
-  }
+  if (loading) return <p className="empty-state">Loading registrations…</p>;
+  if (error) return <p className="form__error">{error}</p>;
 
   return (
     <div className="admin-panel">
+      <dl className="stat-grid">
+        <div className="stat">
+          <dt>Total athletes</dt>
+          <dd>{athletes.length}</dd>
+        </div>
+        <div className="stat">
+          <dt>Last 7 days</dt>
+          <dd>{lastWeek}</dd>
+        </div>
+        <div className="stat">
+          <dt>Clubs</dt>
+          <dd>{clubs}</dd>
+        </div>
+      </dl>
+
       <div className="admin-panel__toolbar">
-        <p className="auth-form__hint">{athletes.length} athlete registration(s)</p>
-        <button type="button" className="btn btn--ghost" onClick={() => void signOut()}>
-          Sign out
-        </button>
+        <input
+          type="search"
+          className="input"
+          placeholder="Search name, club, contact…"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          aria-label="Search registrations"
+        />
+        <div className="admin-panel__buttons">
+          <button
+            type="button"
+            className="btn btn--secondary"
+            onClick={() => exportCsv(filtered)}
+            disabled={filtered.length === 0}
+          >
+            Export CSV
+          </button>
+          <button type="button" className="btn btn--ghost" onClick={() => void signOut()}>
+            Sign out
+          </button>
+        </div>
       </div>
 
-      {athletes.length === 0 ? (
-        <p className="auth-form__hint">No registrations yet.</p>
+      {filtered.length === 0 ? (
+        <p className="empty-state">{athletes.length === 0 ? "No registrations yet." : "No matches for your search."}</p>
       ) : (
-        <div className="admin-table-wrap">
-          <table className="admin-table">
+        <div className="table-wrap">
+          <table className="table">
             <thead>
               <tr>
-                <th>Name</th>
+                <th>Athlete</th>
                 <th>Club</th>
-                <th>Birth year</th>
+                <th>Born</th>
                 <th>Contact</th>
                 <th>Message</th>
                 <th>Registered</th>
               </tr>
             </thead>
             <tbody>
-              {athletes.map((a) => (
+              {filtered.map((a) => (
                 <tr key={a.id}>
-                  <td>{a.name}</td>
+                  <td className="table__strong">{a.name}</td>
                   <td>{a.club}</td>
                   <td>{a.birthYear}</td>
                   <td>
-                    <a href={contactHref(a.contact)} className="landing-text-link">
-                      {a.contact}
-                    </a>
+                    <a href={contactHref(a.contact)}>{a.contact}</a>
                   </td>
-                  <td>{a.message ?? "—"}</td>
-                  <td>{new Date(a.createdAt).toLocaleString("en-US")}</td>
+                  <td className="table__muted">{a.message ?? "—"}</td>
+                  <td className="table__muted">
+                    {new Date(a.createdAt).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -88,6 +134,22 @@ export function AdminAthletesPanel() {
 
 function contactHref(contact: string): string {
   if (contact.includes("@")) return `mailto:${contact}`;
-  const digits = contact.replace(/\D/g, "");
+  const digits = contact.replace(/[^\d+]/g, "");
   return digits ? `tel:${digits}` : "#";
+}
+
+function exportCsv(rows: AthleteRecord[]) {
+  const header = ["Name", "Club", "Birth year", "Contact", "Message", "Registered"];
+  const escape = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const lines = [
+    header.map(escape).join(","),
+    ...rows.map((a) => [a.name, a.club, a.birthYear, a.contact, a.message, a.createdAt].map(escape).join(",")),
+  ];
+  const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `sga-athletes-${new Date().toISOString().slice(0, 10)}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
 }

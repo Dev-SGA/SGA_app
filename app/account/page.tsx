@@ -16,8 +16,11 @@ export default async function AccountPage() {
   }
 
   return (
-    <AuthShell title={`Welcome, ${athlete.name}`} subtitle="Your registration is saved with SGA Performance.">
-      <dl className="account-details">
+    <AuthShell
+      title={`Welcome, ${athlete.name.split(" ")[0]}`}
+      subtitle="Your profile is registered with SGA Performance. Our team will reach out using your contact below."
+    >
+      <dl className="details">
         <div>
           <dt>Name</dt>
           <dd>{athlete.name}</dd>
@@ -35,7 +38,7 @@ export default async function AccountPage() {
           <dd>{athlete.contact}</dd>
         </div>
         {athlete.message ? (
-          <div>
+          <div className="details__full">
             <dt>Message</dt>
             <dd>{athlete.message}</dd>
           </div>

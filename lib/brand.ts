@@ -23,7 +23,7 @@ export const BRAND = {
   legal: "Soccer Growth Analytics",
   slogan: "Greatness Can Be Achieved",
   logos: {
-    horizontal: "/brand/sga-logo-horizontal.png",
+    horizontal: "/brand/sga-logo-horizontal-trim.png",
     vertical: "/brand/sga-logo-vertical.png",
     symbol: "/brand/sga-logo-symbol.png",
   },
@@ -37,7 +37,7 @@ export const LOGO_DIMENSIONS: Record<
   LogoVariant,
   { width: number; height: number; className: LogoSize }
 > = {
-  horizontal: { width: 240, height: 56, className: "lg" },
+  horizontal: { width: 240, height: 98, className: "lg" },
   vertical: { width: 128, height: 160, className: "sidebar" },
   symbol: { width: 56, height: 56, className: "md" },
 };

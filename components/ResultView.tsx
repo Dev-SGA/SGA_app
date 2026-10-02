@@ -1,10 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, type CSSProperties } from "react";
-import { SGA_GRADE_COLORS } from "@/lib/brand";
+import { useEffect, useState } from "react";
 import { productsForProfile } from "@/lib/products";
 import { RESULT_STORAGE_KEY, type TestResult } from "@/lib/scoring";
+
+const GRADE_TONES: Record<string, string> = {
+  "Above Level": "accent",
+  Good: "positive",
+  Average: "warn",
+  "Below Level": "negative",
+};
+
+const RING_RADIUS = 54;
+const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 
 type ResultViewProps = {
   testSlug?: string;
@@ -19,9 +28,7 @@ export function ResultView({ testSlug }: ResultViewProps) {
       const raw = sessionStorage.getItem(RESULT_STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as TestResult;
-        if (!testSlug || parsed.testSlug === testSlug) {
-          setResult(parsed);
-        }
+        if (!testSlug || parsed.testSlug === testSlug) setResult(parsed);
       }
     } catch {
       setResult(null);
@@ -30,70 +37,77 @@ export function ResultView({ testSlug }: ResultViewProps) {
   }, [testSlug]);
 
   if (!ready) {
-    return <p className="result-loading">Loading result…</p>;
+    return <p className="empty-state">Loading result…</p>;
   }
 
   if (!result) {
     return (
-      <div className="result-empty">
-        <p>No recent result found. Take a tactical test to see your profile and recommended products.</p>
-        <Link href="/" className="btn btn--primary">
+      <div className="empty-state">
+        <p>No recent result on this device. Take a tactical test to see your profile and recommendations.</p>
+        <Link href="/#tests" className="btn btn--primary">
           Choose a test
         </Link>
       </div>
     );
   }
 
-  const gradeColor =
-    SGA_GRADE_COLORS[result.gradeLabel as keyof typeof SGA_GRADE_COLORS] ?? SGA_GRADE_COLORS.Average;
+  const tone = GRADE_TONES[result.gradeLabel] ?? "accent";
   const products = productsForProfile(result.profileId);
+  const dashOffset = RING_CIRCUMFERENCE * (1 - result.score / 100);
 
   return (
-    <div className="result-grid">
-      <section className="result-score card">
-        <p className="section-label">Result — {result.testTitle}</p>
-        <div className="result-score__ring" style={{ "--grade-color": gradeColor } as CSSProperties}>
-          <span className="result-score__value">{result.score}</span>
-          <span className="result-score__suffix">/ 100</span>
+    <div className="result">
+      <section className="result__summary card">
+        <div className={`score-ring score-ring--${tone}`}>
+          <svg viewBox="0 0 120 120" aria-hidden="true">
+            <circle className="score-ring__track" cx="60" cy="60" r={RING_RADIUS} />
+            <circle
+              className="score-ring__value"
+              cx="60"
+              cy="60"
+              r={RING_RADIUS}
+              strokeDasharray={RING_CIRCUMFERENCE}
+              strokeDashoffset={dashOffset}
+            />
+          </svg>
+          <div className="score-ring__label">
+            <strong>{result.score}</strong>
+            <span>/ 100</span>
+          </div>
         </div>
-        <p className="result-score__grade" style={{ color: gradeColor }}>
-          {result.gradeLabel}
-        </p>
-        <p className="result-score__hint">Tactical decision-quality index for this test (SGA scale).</p>
-        <Link href={`/tests/${result.testSlug}`} className="btn btn--ghost">
-          Retake test
-        </Link>
+
+        <div className="result__profile">
+          <span className={`chip chip--${tone}`}>{result.gradeLabel}</span>
+          <p className="result__test">{result.testTitle}</p>
+          <h2 className="result__profile-title">{result.profileTitle}</h2>
+          <p className="result__headline">{result.profileHeadline}</p>
+          <p className="result__description">{result.profileDescription}</p>
+          <div className="result__actions">
+            <Link href="/register" className="btn btn--primary">
+              Send my profile to SGA
+            </Link>
+            <Link href={`/tests/${result.testSlug}`} className="btn btn--ghost">
+              Retake test
+            </Link>
+          </div>
+        </div>
       </section>
 
-      <section className="result-profile card">
-        <p className="section-label">Dominant profile</p>
-        <h2 className="result-profile__title">{result.profileTitle}</h2>
-        <p className="result-profile__headline">{result.profileHeadline}</p>
-        <p className="result-profile__body">{result.profileDescription}</p>
-      </section>
-
-      <section className="result-products">
-        <div className="result-products__header">
-          <h2 className="result-products__title">Next step with SGA</h2>
-          <p className="result-products__lead">
-            Based on your profile, these products help you develop and present your potential to clubs.
-          </p>
+      <section className="result__products">
+        <div className="section__head section__head--compact">
+          <p className="eyebrow">Recommended for you</p>
+          <h2 className="section__title section__title--sm">Next steps with SGA</h2>
         </div>
-        <ul className="product-list" role="list">
+        <ul className="product-grid" role="list">
           {products.map((product, i) => (
             <li key={product.id}>
-              <article className={`product-card${i === 0 ? " product-card--featured" : ""}`}>
-                {i === 0 ? <span className="product-card__badge">Recommended</span> : null}
-                <h3 className="product-card__name">{product.name}</h3>
-                <p className="product-card__tagline">{product.tagline}</p>
-                <p className="product-card__desc">{product.description}</p>
-                <a
-                  href={product.href}
-                  className="btn btn--primary product-card__cta"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {product.ctaLabel}
+              <article className={`product${i === 0 ? " product--featured" : ""}`}>
+                {i === 0 ? <span className="chip chip--solid">Best match</span> : null}
+                <h3 className="product__name">{product.name}</h3>
+                <p className="product__tagline">{product.tagline}</p>
+                <p className="product__desc">{product.description}</p>
+                <a href={product.href} className="product__cta" target="_blank" rel="noopener noreferrer">
+                  {product.ctaLabel} <span aria-hidden="true">→</span>
                 </a>
               </article>
             </li>

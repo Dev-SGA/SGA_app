@@ -1,177 +1,164 @@
 import Link from "next/link";
 import { HeroVideo } from "@/components/HeroVideo";
+import { PitchGraphic, type PitchVariant } from "@/components/PitchGraphic";
 import { RecentTestsPanel } from "@/components/RecentTestsPanel";
-import { SgaLogo } from "@/components/SgaLogo";
+import { SiteFooter } from "@/components/SiteFooter";
+import { SiteHeader } from "@/components/SiteHeader";
+import { TestCard } from "@/components/TestCard";
 import { TACTICAL_CONCEPTS } from "@/lib/concepts";
-import { ATE_FRAMEWORK, PRIMARY_TEST_SLUG, START_STEPS } from "@/lib/home";
-import { BRAND } from "@/lib/brand";
+import { ATE_FRAMEWORK, HOW_IT_WORKS, PRIMARY_TEST_SLUG } from "@/lib/home";
 import { TACTICAL_TESTS } from "@/lib/tests";
+
+const totalScenarios = TACTICAL_TESTS.reduce((sum, t) => sum + t.questions.length, 0);
 
 export function LandingPage() {
   return (
-    <div className="landing">
-      <a className="landing-skip" href="#start">
-        Skip to tests
-      </a>
+    <>
+      <SiteHeader />
+      <main>
+        <section className="container hero">
+          <div className="hero__copy">
+            <p className="eyebrow">Free tactical IQ tests</p>
+            <h1 className="hero__title">
+              Train your <span className="hero__accent">tactical brain.</span>
+            </h1>
+            <p className="hero__lead">
+              Read the game, make better decisions, and get noticed. Take a short scenario-based test, see your
+              tactical profile, and connect with SGA Performance.
+            </p>
+            <div className="hero__ctas">
+              <Link href={`/tests/${PRIMARY_TEST_SLUG}`} className="btn btn--primary btn--lg">
+                Take the free test
+              </Link>
+              <Link href="#tests" className="btn btn--secondary btn--lg">
+                Browse tests
+              </Link>
+            </div>
+            <dl className="hero__stats">
+              <div>
+                <dt>Tests</dt>
+                <dd>{TACTICAL_TESTS.length}</dd>
+              </div>
+              <div>
+                <dt>Scenarios</dt>
+                <dd>{totalScenarios}</dd>
+              </div>
+              <div>
+                <dt>Per test</dt>
+                <dd>~4 min</dd>
+              </div>
+            </dl>
+          </div>
+          <HeroVideo />
+        </section>
 
-      <nav aria-label="Sections" className="landing-nav">
-        <a href="#start">Start free</a>
-        <a href="#concepts">The game</a>
-        <a href="#framework">Our method</a>
-      </nav>
+        <RecentTestsPanel />
 
-      <div className="landing-top-actions">
-        <Link href="/login" className="landing-text-link">
-          Sign in
-        </Link>
-        <Link href="/register" className="btn btn--secondary btn--sm">
-          Register
-        </Link>
-      </div>
-
-      <header className="landing-hero">
-        <Link href="/" className="landing-hero__logo" aria-label={`${BRAND.name} — home`}>
-          <SgaLogo variant="horizontal" size="hero" priority />
-        </Link>
-
-        <h1 className="landing-hero__title">
-          TRAIN YOUR
-          <br />
-          <span className="landing-hero__accent">TACTICAL BRAIN</span>
-        </h1>
-
-        <p className="landing-hero__lead">
-          Read the game. Make better decisions. Start with the free tactical test, then explore SGA products to
-          develop and showcase your profile to clubs.
-        </p>
-
-        <div className="landing-hero__ctas">
-          <Link href={`/tests/${PRIMARY_TEST_SLUG}`} className="btn btn--primary btn--lg">
-            Take the free test
-          </Link>
-          <Link href="/result" className="btn btn--secondary btn--lg">
-            View my result
-          </Link>
-        </div>
-
-        <HeroVideo />
-      </header>
-
-      <RecentTestsPanel />
-
-      <section id="start" className="landing-section landing-section--wide">
-        <div className="landing-section__intro">
-          <h2 className="landing-section__title">START FREE</h2>
-          <p className="landing-section__subtitle">
-            Your first steps: test your reading, review your result, and explore concepts for your profile.
-          </p>
-        </div>
-        <div className="step-grid">
-          {START_STEPS.map((step) => (
-            <Link key={step.number} href={step.href} className="step-card">
-              <span className="step-card__number">{step.number}</span>
-              <h3 className="step-card__title">{step.title}</h3>
-              <p className="step-card__body">{step.body}</p>
-              <span className="step-card__action">
-                {step.action} <span aria-hidden="true">↗</span>
-              </span>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section id="catalog" className="landing-section landing-section--wide">
-        <div className="landing-section__intro">
-          <p className="landing-section__eyebrow">SGA catalog</p>
-          <h2 className="landing-section__title">AVAILABLE TESTS</h2>
-          <p className="landing-section__subtitle">
-            Micro tests by phase of play — situational videos will be added soon.
-          </p>
-        </div>
-        <div className="catalog-grid">
-          {TACTICAL_TESTS.map((test) => (
-            <Link key={test.slug} href={`/tests/${test.slug}`} className="catalog-card">
-              <span className="catalog-card__phase">{test.phase}</span>
-              <h3 className="catalog-card__title">{test.title}</h3>
-              <p className="catalog-card__meta">
-                {test.questions.length} scenarios · ~{test.durationMinutes} min
+        <section id="tests" className="section">
+          <div className="container">
+            <div className="section__head">
+              <p className="eyebrow">Choose your test</p>
+              <h2 className="section__title">One test per phase of play</h2>
+              <p className="section__lead">
+                Each test focuses on a moment of the game. Start with any of them — your result is ready instantly.
               </p>
-            </Link>
-          ))}
-        </div>
-      </section>
+            </div>
+            <div className="test-grid">
+              {TACTICAL_TESTS.map((test) => (
+                <TestCard key={test.slug} test={test} />
+              ))}
+            </div>
+          </div>
+        </section>
 
-      <section id="concepts" className="landing-section landing-section--wide">
-        <div className="landing-section__intro">
-          <p className="landing-section__eyebrow">Learn concepts like these</p>
-          <h2 className="landing-section__title">REAL MATCH ANALYSIS</h2>
-          <p className="landing-section__subtitle">
-            Explore the game through tactical concepts and guided animations (video content coming soon).
-          </p>
-        </div>
-        <div className="concept-grid">
-          {TACTICAL_CONCEPTS.map((concept) => (
-            <Link key={concept.id} href={concept.href} className="concept-card">
-              <div className="concept-card__media">
-                <div className="concept-card__placeholder" aria-hidden="true" />
-                <span className="concept-card__tag">{concept.tag}</span>
+        <section id="how" className="section section--alt">
+          <div className="container">
+            <div className="section__head">
+              <p className="eyebrow">How it works</p>
+              <h2 className="section__title">From test to development plan</h2>
+            </div>
+            <ol className="steps" role="list">
+              {HOW_IT_WORKS.map((step) => (
+                <li key={step.number} className="step">
+                  <span className="step__number">{step.number}</span>
+                  <h3 className="step__title">{step.title}</h3>
+                  <p className="step__body">{step.body}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        <section id="concepts" className="section">
+          <div className="container">
+            <div className="section__head">
+              <p className="eyebrow">Learn concepts like these</p>
+              <h2 className="section__title">Real match analysis</h2>
+              <p className="section__lead">
+                Guided video breakdowns are on the way. Preview the concepts behind each test.
+              </p>
+            </div>
+            <div className="concept-grid">
+              {TACTICAL_CONCEPTS.map((concept) => (
+                <Link key={concept.id} href={concept.href} className="concept-card">
+                  <div className="concept-card__visual">
+                    <PitchGraphic variant={concept.id as PitchVariant} label={concept.title} />
+                    <span className="chip chip--solid concept-card__tag">{concept.tag}</span>
+                  </div>
+                  <div className="concept-card__body">
+                    <h3 className="concept-card__title">{concept.title}</h3>
+                    <p className="concept-card__desc">{concept.description}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="method" className="section section--alt">
+          <div className="container">
+            <div className="section__head">
+              <p className="eyebrow">Our methodology</p>
+              <h2 className="section__title">The A→T→E framework</h2>
+            </div>
+            <div className="framework">
+              {ATE_FRAMEWORK.map((phase) => (
+                <article key={phase.letter} className={`framework__item framework__item--${phase.tone}`}>
+                  <span className="framework__letter" aria-hidden="true">
+                    {phase.letter}
+                  </span>
+                  <div>
+                    <h3 className="framework__title">{phase.title}</h3>
+                    <p className="framework__body">{phase.body}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="section">
+          <div className="container">
+            <div className="cta-band">
+              <div>
+                <h2 className="cta-band__title">Ready to be seen by SGA?</h2>
+                <p className="cta-band__text">
+                  Create your athlete profile with your club and contact details — our team will reach out.
+                </p>
               </div>
-              <div className="concept-card__body">
-                <h4 className="concept-card__title">{concept.title}</h4>
-                <p className="concept-card__desc">{concept.description}</p>
+              <div className="cta-band__actions">
+                <Link href="/register" className="btn btn--primary btn--lg">
+                  Create athlete profile
+                </Link>
+                <Link href={`/tests/${PRIMARY_TEST_SLUG}`} className="btn btn--ghost btn--lg">
+                  Test first
+                </Link>
               </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="landing-section landing-section--narrow access">
-        <div className="access__primary">
-          <h2 className="landing-section__title access__title">Pick up where you left off.</h2>
-          <p>Results are saved in this browser until you complete a new test.</p>
-          <Link href="/result" className="btn btn--secondary">
-            Open result
-          </Link>
-        </div>
-        <div className="access__card card">
-          <h3>Already taken a test?</h3>
-          <p className="access__card-text">Review your score, tactical profile, and recommended SGA Performance products.</p>
-          <Link href="/result" className="btn btn--primary">
-            View profile & products
-          </Link>
-        </div>
-      </section>
-
-      <section id="framework" className="landing-section landing-section--wide">
-        <div className="landing-section__intro">
-          <p className="landing-section__eyebrow landing-section__eyebrow--muted">Our methodology</p>
-          <h2 className="landing-section__title">THE A→T→E FRAMEWORK</h2>
-        </div>
-        <div className="framework-grid">
-          {ATE_FRAMEWORK.map((phase) => (
-            <article key={phase.letter} className={`framework-card framework-card--${phase.tone}`}>
-              <div className="framework-card__badge" aria-hidden="true">
-                {phase.letter}
-              </div>
-              <h4 className="framework-card__title">{phase.title}</h4>
-              <p className="framework-card__body">{phase.body}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="landing-section landing-section--narrow hub card">
-        <h2 className="hub__title">Next step with SGA</h2>
-        <p>Turn your result into an IDP, match report, or scouting materials.</p>
-        <Link href="/result" className="btn btn--primary">
-          View recommended products
-        </Link>
-      </section>
-
-      <footer className="landing-footer">
-        <p className="footer__slogan">{BRAND.slogan}</p>
-        <p className="footer__rights">© {new Date().getFullYear()} {BRAND.legal}. All rights reserved.</p>
-      </footer>
-    </div>
+            </div>
+          </div>
+        </section>
+      </main>
+      <SiteFooter />
+    </>
   );
 }

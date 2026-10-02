@@ -4,8 +4,9 @@ out/
 dist/
 *.tsbuildinfo
 .env
-.env.*
-!.env.example
+.env.local
+.env.production
+.env.development
 .DS_Store
 .vercel
 data/athletes.json
