@@ -21,8 +21,11 @@ export function LandingPage() {
       </nav>
 
       <div className="landing-top-actions">
-        <Link href="/result" className="landing-text-link">
-          View result
+        <Link href="/login" className="landing-text-link">
+          Sign in
+        </Link>
+        <Link href="/register" className="btn btn--secondary btn--sm">
+          Register
         </Link>
       </div>
 

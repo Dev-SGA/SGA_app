@@ -55,6 +55,9 @@
   top: 24px;
   right: 24px;
   z-index: 9;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  max-width: min(100%, 280px);
 }
 
 .landing-text-link {

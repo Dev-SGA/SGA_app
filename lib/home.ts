@@ -14,8 +14,8 @@ export const START_STEPS = [
     number: "02",
     title: "Your SGA result",
     body: "When you finish, get your score, dominant profile, and product recommendations for scouts and clubs.",
-    href: "/result",
-    action: "View latest result",
+    href: "/register",
+    action: "Register with SGA",
   },
   {
     number: "03",

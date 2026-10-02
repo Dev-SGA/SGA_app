@@ -38,8 +38,29 @@ Legacy URLs `/resultado` and old Portuguese test slugs redirect via `next.config
 - Questions: optional `media` on each question in `lib/tests.ts` (`videoSrc`, `poster`).
 - Concepts: `lib/concepts.ts` — replace placeholders when assets are ready.
 
+## Athlete accounts & admin
+
+Athletes register at `/register` with **name, club, year of birth, contact**, optional message, and a password. They sign in at `/login` and manage their profile at `/account`.
+
+**Admin:** open `/admin/login` to view all registrations in a table.
+
+### Environment variables (production)
+
+Copy `.env.example` into Vercel project settings:
+
+| Variable | Purpose |
+|----------|---------|
+| `DATABASE_URL` | Neon/Postgres connection (recommended on Vercel) |
+| `SESSION_SECRET` | Cookie signing secret (16+ characters) |
+| `ADMIN_USERNAME` | Admin login username (default `admin`) |
+| `ADMIN_PASSWORD` | Admin login password (**change in production**) |
+
+Without `DATABASE_URL`, registrations are stored in `data/athletes.json` (local dev only).
+
+**Default dev admin:** username `admin`, password `sga-admin-dev`.
+
 ## Suggested next steps
 
 - Replace links in `lib/products.ts` with live landing pages.
-- Add a lead form (email / WhatsApp) on the result page.
-- Persist results via API or CRM.
+- Email notifications when a new athlete registers.
+- Persist test results linked to athlete accounts.
