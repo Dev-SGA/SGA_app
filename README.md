@@ -44,7 +44,7 @@ Athletes register at `/register` with **name, club, year of birth, position (CB,
 
 On registration, if contact is an email and `RESEND_API_KEY` + `EMAIL_FROM` are set, the athlete receives SGA product links by email.
 
-**Admin:** open `/admin/login` (credentials hint on page). Default dev login: `admin` / `sga-admin-dev` unless `ADMIN_USERNAME` / `ADMIN_PASSWORD` are set on Vercel.
+**Admin:** open `/admin/login` (credentials hint on page). Default dev login: `admin` / `sga-admin-dev` unless `ADMIN_USERNAME` / `ADMIN_PASSWORD` are set on Vercel. In `/admin`, use **View**, **Edit**, or **Delete** on each athlete row.
 
 ### Environment variables (production)
 
