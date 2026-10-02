@@ -248,3 +248,117 @@ export async function getAthleteById(id: string): Promise<AthleteRecord | null> 
   const row = store.find((a) => a.id === id);
   return row ? rowToPublic(row) : null;
 }
+
+export type UpdateAthleteInput = {
+  name: string;
+  club: string;
+  birthYear: number;
+  position: string;
+  contact: string;
+  message?: string;
+  password?: string;
+};
+
+export async function updateAthlete(id: string, input: UpdateAthleteInput): Promise<AthleteRecord> {
+  const existing = await getAthleteById(id);
+  if (!existing) {
+    throw new AthleteAuthError("Athlete not found.");
+  }
+
+  const name = input.name.trim();
+  const club = input.club.trim();
+  const contact = normalizeContact(input.contact);
+  const message = input.message?.trim() || null;
+  const position = parseAthletePosition(input.position);
+
+  if (!name || !club || !contact) {
+    throw new AthleteAuthError("Name, club, and contact are required.");
+  }
+  if (!position) {
+    throw new AthleteAuthError("Select a valid position (CB, FB, MF, AMF, WG, ST).");
+  }
+  if (
+    !Number.isFinite(input.birthYear) ||
+    input.birthYear < 1970 ||
+    input.birthYear > new Date().getFullYear()
+  ) {
+    throw new AthleteAuthError("Enter a valid birth year.");
+  }
+  if (input.password !== undefined && input.password.length > 0 && input.password.length < 8) {
+    throw new AthleteAuthError("Password must be at least 8 characters.");
+  }
+
+  const passwordHash =
+    input.password && input.password.length >= 8 ? await hashPassword(input.password) : undefined;
+
+  if (getDatabaseUrl()) {
+    try {
+      if (passwordHash) {
+        await withPostgres(async (sql) => {
+          await sql`
+            UPDATE athletes
+            SET name = ${name}, club = ${club}, birth_year = ${input.birthYear}, position = ${position},
+                contact = ${contact}, message = ${message}, password_hash = ${passwordHash}
+            WHERE id = ${id}
+          `;
+        });
+      } else {
+        await withPostgres(async (sql) => {
+          await sql`
+            UPDATE athletes
+            SET name = ${name}, club = ${club}, birth_year = ${input.birthYear}, position = ${position},
+                contact = ${contact}, message = ${message}
+            WHERE id = ${id}
+          `;
+        });
+      }
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      if (msg.includes("unique") || msg.includes("duplicate")) {
+        throw new AthleteAuthError("Another account already uses this contact.");
+      }
+      throw e;
+    }
+    const updated = await getAthleteById(id);
+    if (!updated) throw new AthleteAuthError("Athlete not found.");
+    return updated;
+  }
+
+  const store = await readJsonStore();
+  const index = store.findIndex((a) => a.id === id);
+  if (index < 0) throw new AthleteAuthError("Athlete not found.");
+
+  if (store.some((a) => a.id !== id && a.contact === contact)) {
+    throw new AthleteAuthError("Another account already uses this contact.");
+  }
+
+  const row = store[index];
+  row.name = name;
+  row.club = club;
+  row.birthYear = input.birthYear;
+  row.position = position;
+  row.contact = contact;
+  row.message = message;
+  if (passwordHash) row.passwordHash = passwordHash;
+  store[index] = row;
+  await writeJsonStore(store);
+  return rowToPublic(row);
+}
+
+export async function deleteAthlete(id: string): Promise<void> {
+  if (getDatabaseUrl()) {
+    await withPostgres(async (sql) => {
+      await sql`DELETE FROM athletes WHERE id = ${id}`;
+    });
+    const remaining = await getAthleteById(id);
+    if (remaining) throw new AthleteAuthError("Could not delete athlete.");
+    return;
+  }
+
+  const store = await readJsonStore();
+  const next = store.filter((a) => a.id !== id);
+  if (next.length === store.length) {
+    throw new AthleteAuthError("Athlete not found.");
+  }
+  await writeJsonStore(next);
+}

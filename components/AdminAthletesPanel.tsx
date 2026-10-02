@@ -1,31 +1,38 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { AthleteRecord } from "@/lib/athletes";
+import { AdminAthleteManage, type AdminAthleteMode } from "@/components/AdminAthleteManage";
 
 export function AdminAthletesPanel() {
   const [athletes, setAthletes] = useState<AthleteRecord[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
+  const [manageId, setManageId] = useState<string | null>(null);
+  const [manageMode, setManageMode] = useState<AdminAthleteMode | null>(null);
+
+  const loadAthletes = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/athletes");
+      const data = (await res.json()) as { ok: boolean; athletes?: AthleteRecord[]; error?: string };
+      if (!res.ok || !data.ok) {
+        setError(data.error ?? "Could not load registrations.");
+        return;
+      }
+      setAthletes(data.athletes ?? []);
+    } catch {
+      setError("Network error.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    void (async () => {
-      try {
-        const res = await fetch("/api/admin/athletes");
-        const data = (await res.json()) as { ok: boolean; athletes?: AthleteRecord[]; error?: string };
-        if (!res.ok || !data.ok) {
-          setError(data.error ?? "Could not load registrations.");
-          return;
-        }
-        setAthletes(data.athletes ?? []);
-      } catch {
-        setError("Network error.");
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+    void loadAthletes();
+  }, [loadAthletes]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -43,6 +50,16 @@ export function AdminAthletesPanel() {
     return athletes.filter((a) => new Date(a.createdAt).getTime() >= cutoff).length;
   }, [athletes]);
 
+  function openManage(id: string, mode: AdminAthleteMode) {
+    setManageId(id);
+    setManageMode(mode);
+  }
+
+  function closeManage() {
+    setManageId(null);
+    setManageMode(null);
+  }
+
   async function signOut() {
     await fetch("/api/auth/logout", { method: "POST" });
     window.location.href = "/admin/login";
@@ -53,6 +70,18 @@ export function AdminAthletesPanel() {
 
   return (
     <div className="admin-panel">
+      <AdminAthleteManage
+        athleteId={manageId}
+        mode={manageMode}
+        onClose={closeManage}
+        onUpdated={(athlete) => {
+          setAthletes((rows) => rows.map((r) => (r.id === athlete.id ? athlete : r)));
+        }}
+        onDeleted={(id) => {
+          setAthletes((rows) => rows.filter((r) => r.id !== id));
+        }}
+      />
+
       <dl className="stat-grid">
         <div className="stat">
           <dt>Total athletes</dt>
@@ -104,8 +133,8 @@ export function AdminAthletesPanel() {
                 <th>Pos.</th>
                 <th>Born</th>
                 <th>Contact</th>
-                <th>Message</th>
                 <th>Registered</th>
+                <th aria-label="Actions" />
               </tr>
             </thead>
             <tbody>
@@ -118,13 +147,27 @@ export function AdminAthletesPanel() {
                   <td>
                     <a href={contactHref(a.contact)}>{a.contact}</a>
                   </td>
-                  <td className="table__muted">{a.message ?? "—"}</td>
                   <td className="table__muted">
                     {new Date(a.createdAt).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
                       year: "numeric",
                     })}
+                  </td>
+                  <td className="table__actions">
+                    <button type="button" className="btn btn--ghost btn--sm" onClick={() => openManage(a.id, "view")}>
+                      View
+                    </button>
+                    <button type="button" className="btn btn--ghost btn--sm" onClick={() => openManage(a.id, "edit")}>
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn--ghost btn--sm table__danger"
+                      onClick={() => openManage(a.id, "delete")}
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}

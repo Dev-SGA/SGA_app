@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import { listAthletes } from "@/lib/athletes";
-import { getSession } from "@/lib/session";
+import { requireAdminSession } from "@/lib/admin-session";
 
 export async function GET() {
-  const session = await getSession();
-  if (!session || session.role !== "admin") {
+  if (!(await requireAdminSession())) {
     return NextResponse.json({ ok: false, error: "Unauthorized." }, { status: 401 });
   }
 
