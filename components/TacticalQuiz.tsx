@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import { appendRecentResult } from "@/lib/activity";
+import { QuestionMediaSlot } from "@/components/QuestionMediaSlot";
 import { computeTestResult, RESULT_STORAGE_KEY } from "@/lib/scoring";
 import type { TacticalTest } from "@/lib/tests";
 
@@ -22,9 +24,11 @@ export function TacticalQuiz({ test }: TacticalQuizProps) {
   const canAdvance = Boolean(selected);
 
   const stepLabel = useMemo(
-    () => `Situação ${index + 1} de ${test.questions.length}`,
-    [index, test.questions.length],
+    () => `${test.phase} · ${index + 1} de ${test.questions.length}`,
+    [index, test.questions.length, test.phase],
   );
+
+  const optionLetters = ["A", "B", "C", "D", "E"];
 
   function choose(optionId: string) {
     if (!question) return;
@@ -41,6 +45,7 @@ export function TacticalQuiz({ test }: TacticalQuizProps) {
     const result = computeTestResult(test, answers);
     try {
       sessionStorage.setItem(RESULT_STORAGE_KEY, JSON.stringify(result));
+      appendRecentResult(result);
     } catch {
       /* ignore quota / private mode */
     }
@@ -61,19 +66,36 @@ export function TacticalQuiz({ test }: TacticalQuizProps) {
   }
 
   return (
-    <div className="quiz">
-      <div className="quiz__progress" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100}>
-        <span className="quiz__progress-fill" style={{ width: `${progress}%` }} />
-      </div>
-      <p className="quiz__step">{stepLabel}</p>
+    <div className="quiz quiz--immersive">
+      <header className="quiz__header">
+        <p className="quiz__part">Teste tático · {test.title}</p>
+        <p className="quiz__step">{stepLabel}</p>
+        <div
+          className="quiz__progress"
+          role="progressbar"
+          aria-valuenow={Math.round(progress)}
+          aria-valuemin={0}
+          aria-valuemax={100}
+        >
+          <span className="quiz__progress-fill" style={{ width: `${progress}%` }} />
+        </div>
+      </header>
+
+      <QuestionMediaSlot
+        media={question.media}
+        phase={test.phase}
+        index={index}
+        total={test.questions.length}
+      />
 
       <section className="quiz__panel">
         <p className="quiz__scenario">{question.scenario}</p>
         <h2 className="quiz__prompt">{question.prompt}</h2>
 
         <ul className="quiz__options" role="list">
-          {question.options.map((opt) => {
+          {question.options.map((opt, optIndex) => {
             const isSelected = selected === opt.id;
+            const letter = optionLetters[optIndex] ?? "?";
             return (
               <li key={opt.id}>
                 <button
@@ -82,6 +104,9 @@ export function TacticalQuiz({ test }: TacticalQuizProps) {
                   onClick={() => choose(opt.id)}
                   aria-pressed={isSelected}
                 >
+                  <span className="quiz__option-badge" aria-hidden="true">
+                    {letter}
+                  </span>
                   <span className="quiz__option-label">{opt.label}</span>
                 </button>
               </li>

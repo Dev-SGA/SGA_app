@@ -8,11 +8,19 @@ export type TestOption = {
   profileWeights: Partial<Record<TacticalProfileId, number>>;
 };
 
+export type QuestionMedia = {
+  /** Poster ou thumbnail — substituir quando o vídeo estiver no CDN/public */
+  poster?: string;
+  videoSrc?: string;
+  caption?: string;
+};
+
 export type TestQuestion = {
   id: string;
   scenario: string;
   prompt: string;
   options: TestOption[];
+  media?: QuestionMedia;
 };
 
 export type TacticalTest = {
