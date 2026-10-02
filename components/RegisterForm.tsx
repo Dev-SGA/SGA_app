@@ -4,8 +4,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export function RegisterForm() {
+type RegisterFormProps = {
+  redirectTo?: string;
+};
+
+export function RegisterForm({ redirectTo = "/account" }: RegisterFormProps) {
   const router = useRouter();
+  const afterAuth = redirectTo;
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const currentYear = new Date().getFullYear();
@@ -40,7 +45,7 @@ export function RegisterForm() {
         setError(data.error ?? "Registration failed.");
         return;
       }
-      router.push("/account");
+      router.push(afterAuth);
       router.refresh();
     } catch {
       setError("Network error. Try again.");
@@ -102,7 +107,10 @@ export function RegisterForm() {
       </button>
 
       <p className="form__footer">
-        Already registered? <Link href="/login">Sign in</Link>
+        Already registered?{" "}
+        <Link href={afterAuth === "/account" ? "/login" : `/login?next=${encodeURIComponent(afterAuth)}`}>
+          Sign in
+        </Link>
       </p>
     </form>
   );

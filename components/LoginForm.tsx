@@ -4,8 +4,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export function LoginForm() {
+type LoginFormProps = {
+  redirectTo?: string;
+};
+
+export function LoginForm({ redirectTo = "/account" }: LoginFormProps) {
   const router = useRouter();
+  const afterAuth = redirectTo;
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -29,7 +34,7 @@ export function LoginForm() {
         setError(data.error ?? "Sign-in failed.");
         return;
       }
-      router.push("/account");
+      router.push(afterAuth);
       router.refresh();
     } catch {
       setError("Network error. Try again.");
@@ -60,7 +65,10 @@ export function LoginForm() {
       </button>
 
       <p className="form__footer">
-        New athlete? <Link href="/register">Create an account</Link>
+        New athlete?{" "}
+        <Link href={afterAuth === "/account" ? "/register" : `/register?next=${encodeURIComponent(afterAuth)}`}>
+          Create an account
+        </Link>
       </p>
     </form>
   );

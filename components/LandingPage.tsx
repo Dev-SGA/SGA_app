@@ -10,6 +10,7 @@ import { ATE_FRAMEWORK, HOW_IT_WORKS, PRIMARY_TEST_SLUG } from "@/lib/home";
 import { TACTICAL_TESTS } from "@/lib/tests";
 
 const totalScenarios = TACTICAL_TESTS.reduce((sum, t) => sum + t.questions.length, 0);
+const registerForPrimaryTest = `/register?next=${encodeURIComponent(`/tests/${PRIMARY_TEST_SLUG}`)}`;
 
 export function LandingPage() {
   return (
@@ -23,12 +24,12 @@ export function LandingPage() {
               Train your <span className="hero__accent">tactical brain.</span>
             </h1>
             <p className="hero__lead">
-              Read the game, make better decisions, and get noticed. Take a short scenario-based test, see your
-              tactical profile, and connect with SGA Performance.
+              Read the game, make better decisions, and get noticed. Register, take a short scenario-based test, see
+              your tactical profile, and connect with SGA Performance.
             </p>
             <div className="hero__ctas">
-              <Link href={`/tests/${PRIMARY_TEST_SLUG}`} className="btn btn--primary btn--lg">
-                Take the free test
+              <Link href={registerForPrimaryTest} className="btn btn--primary btn--lg">
+                Register &amp; start test
               </Link>
               <Link href="#tests" className="btn btn--secondary btn--lg">
                 Browse tests
@@ -60,7 +61,8 @@ export function LandingPage() {
               <p className="eyebrow">Choose your test</p>
               <h2 className="section__title">One test per phase of play</h2>
               <p className="section__lead">
-                Each test focuses on a moment of the game. Start with any of them — your result is ready instantly.
+                Each test focuses on a moment of the game. Register once, then open any test — your result is ready
+                instantly.
               </p>
             </div>
             <div className="test-grid">
@@ -147,11 +149,11 @@ export function LandingPage() {
                 </p>
               </div>
               <div className="cta-band__actions">
-                <Link href="/register" className="btn btn--primary btn--lg">
-                  Create athlete profile
+                <Link href={registerForPrimaryTest} className="btn btn--primary btn--lg">
+                  Register &amp; take a test
                 </Link>
-                <Link href={`/tests/${PRIMARY_TEST_SLUG}`} className="btn btn--ghost btn--lg">
-                  Test first
+                <Link href="/login" className="btn btn--ghost btn--lg">
+                  Already registered? Sign in
                 </Link>
               </div>
             </div>

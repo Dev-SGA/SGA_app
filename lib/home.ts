@@ -5,18 +5,18 @@ export const PRIMARY_TEST_SLUG = TACTICAL_TESTS[0]?.slug ?? "possession-reading"
 export const HOW_IT_WORKS = [
   {
     number: "01",
-    title: "Take a free test",
-    body: "Answer real match scenarios in about four minutes. No account needed to start.",
+    title: "Create your athlete account",
+    body: "Register with your name, club, birth year, and contact so SGA can follow up with you.",
   },
   {
     number: "02",
-    title: "Get your tactical profile",
-    body: "See your decision-quality score and the player profile that fits how you read the game.",
+    title: "Take a tactical test",
+    body: "Answer real match scenarios in about four minutes — one test per phase of play.",
   },
   {
     number: "03",
-    title: "Connect with SGA",
-    body: "Register so our analysts can follow up with development plans, reports, and scouting material.",
+    title: "Get your profile",
+    body: "See your decision-quality score, tactical profile, and recommended SGA products.",
   },
 ] as const;
 
