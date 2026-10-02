@@ -1,10 +1,9 @@
-/** Pré-visualizações de conceitos (thumbnails/vídeos podem ser ligados depois). */
+/** Concept previews — link thumbnails/videos when assets are ready. */
 export type TacticalConcept = {
   id: string;
   tag: string;
   title: string;
   description: string;
-  /** Caminho em public/ quando o asset existir */
   poster?: string;
   href: string;
 };
@@ -13,25 +12,25 @@ export const TACTICAL_CONCEPTS: TacticalConcept[] = [
   {
     id: "build-up",
     tag: "3-2-5",
-    title: "Estrutura de construção",
-    description: "Como o time se organiza na posse para progredir a bola com segurança.",
+    title: "Build-up structure",
+    description: "How the team shapes in possession to progress the ball safely.",
     poster: "/media/concepts/build-up.jpg",
-    href: "/tests/leitura-posse",
+    href: "/tests/possession-reading",
   },
   {
     id: "advantages",
-    tag: "Sobreposição",
-    title: "Criando vantagens",
-    description: "Sobreposições, trocas de lado e movimentos para explorar espaço.",
+    tag: "Overlap",
+    title: "Creating advantages",
+    description: "Overlaps, switches of play, and movements to exploit space.",
     poster: "/media/concepts/advantages.jpg",
-    href: "/tests/transicao-defesa-ataque",
+    href: "/tests/defense-to-attack-transition",
   },
   {
     id: "pocket",
-    tag: "Entre linhas",
-    title: "Receber no bolso",
-    description: "Encontrar o intervalo entre linhas para receber, girar e projetar o jogo.",
+    tag: "Half-space",
+    title: "Receiving in the pocket",
+    description: "Finding the gap between lines to receive, turn, and project the attack.",
     poster: "/media/concepts/pocket.jpg",
-    href: "/tests/finalizacao-ultimo-passe",
+    href: "/tests/final-third",
   },
 ];

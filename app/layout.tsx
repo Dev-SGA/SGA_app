@@ -3,9 +3,9 @@ import "./globals.css";
 import "./landing.css";
 
 export const metadata: Metadata = {
-  title: "Testes Táticos | SGA Performance",
+  title: "Tactical Tests | SGA Performance",
   description:
-    "Micro testes táticos para atletas — resultado instantâneo e encaminhamento para produtos SGA Performance.",
+    "Free tactical micro-tests for athletes — instant results and paths to SGA Performance products.",
 };
 
 export const viewport = {
@@ -14,7 +14,7 @@ export const viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR">
+    <html lang="en">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

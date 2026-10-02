@@ -24,7 +24,7 @@ export function TacticalQuiz({ test }: TacticalQuizProps) {
   const canAdvance = Boolean(selected);
 
   const stepLabel = useMemo(
-    () => `${test.phase} · ${index + 1} de ${test.questions.length}`,
+    () => `${test.phase} · ${index + 1} of ${test.questions.length}`,
     [index, test.questions.length, test.phase],
   );
 
@@ -49,7 +49,7 @@ export function TacticalQuiz({ test }: TacticalQuizProps) {
     } catch {
       /* ignore quota / private mode */
     }
-    router.push(`/resultado?test=${test.slug}`);
+    router.push(`/result?test=${test.slug}`);
   }
 
   function goBack() {
@@ -59,8 +59,8 @@ export function TacticalQuiz({ test }: TacticalQuizProps) {
   if (!question) {
     return (
       <p className="test-empty">
-        Este teste ainda não possui perguntas.{" "}
-        <Link href="/">Voltar ao início</Link>
+        This test has no questions yet.{" "}
+        <Link href="/">Back to home</Link>
       </p>
     );
   }
@@ -68,7 +68,7 @@ export function TacticalQuiz({ test }: TacticalQuizProps) {
   return (
     <div className="quiz quiz--immersive">
       <header className="quiz__header">
-        <p className="quiz__part">Teste tático · {test.title}</p>
+        <p className="quiz__part">Tactical test · {test.title}</p>
         <p className="quiz__step">{stepLabel}</p>
         <div
           className="quiz__progress"
@@ -117,10 +117,10 @@ export function TacticalQuiz({ test }: TacticalQuizProps) {
 
       <div className="quiz__actions">
         <button type="button" className="btn btn--ghost" onClick={goBack} disabled={index === 0}>
-          Anterior
+          Previous
         </button>
         <button type="button" className="btn btn--primary" onClick={goNext} disabled={!canAdvance}>
-          {index === test.questions.length - 1 ? "Ver resultado" : "Próxima"}
+          {index === test.questions.length - 1 ? "View result" : "Next"}
         </button>
       </div>
     </div>

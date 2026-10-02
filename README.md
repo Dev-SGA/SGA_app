@@ -1,43 +1,45 @@
-# SGA App — Testes Táticos
+# SGA App — Tactical Tests
 
-App **Next.js** pronto para deploy na **Vercel**: landing e fluxo de testes inspirados na experiência do [GST Tactical Test](https://gst-tactical-test.vercel.app/), com **cores, fontes e logos SGA** (manual 2023).
+**Next.js** app ready for **Vercel**: landing and test flow inspired by [GST Tactical Test](https://gst-tactical-test.vercel.app/), with **SGA colors, fonts, and logos** (2023 brand manual).
 
-Micro testes táticos para captar atletas, com briefing, questionário, resultado (nota + perfil) e encaminhamento para produtos SGA Performance.
+Free tactical micro-tests for athlete acquisition: briefing, questionnaire, result (score + profile), and SGA Performance product CTAs.
 
-## Desenvolvimento
+## Development
 
 ```bash
 npm install
 npm run dev
 ```
 
-Abra [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000).
 
-## Estrutura
+## Structure
 
-| Caminho | Descrição |
-|--------|-----------|
-| `app/page.tsx` | Lista de testes |
-| `app/tests/[slug]/` | Fluxo do questionário |
-| `app/resultado/` | Nota, perfil tático e produtos recomendados |
-| `lib/tests.ts` | Situações e opções dos testes |
-| `lib/products.ts` | Catálogo e CTAs (ajuste `href` para URLs comerciais) |
-| `lib/scoring.ts` | Cálculo de nota e perfil |
+| Path | Description |
+|------|-------------|
+| `app/page.tsx` | Landing page |
+| `app/tests/[slug]/` | Briefing + questionnaire |
+| `app/result/` | Score, tactical profile, recommended products |
+| `lib/tests.ts` | Scenarios and answer options |
+| `lib/products.ts` | Catalog and CTAs (update `href` for live URLs) |
+| `lib/scoring.ts` | Score and profile calculation |
 
-## Deploy na Vercel
+Legacy URLs `/resultado` and old Portuguese test slugs redirect via `next.config.ts`.
 
-1. Importe o repositório `Dev-SGA/SGA_app` na Vercel.
-2. Framework detectado: **Next.js** (`vercel.json`).
-3. Build command padrão: `next build`.
+## Deploy on Vercel
 
-## Mídia (vídeos / thumbnails)
+1. Import the `Dev-SGA/SGA_app` repository on Vercel.
+2. Framework: **Next.js** (`vercel.json`).
+3. Default build: `next build`.
 
-- Hero: configure `videoSrc` em `components/HeroVideo.tsx` ou arquivos em `public/media/`.
-- Perguntas: campo opcional `media` em `lib/tests.ts` (`videoSrc`, `poster`).
-- Conceitos: `lib/concepts.ts` — substituir placeholders quando os assets estiverem prontos.
+## Media (videos / thumbnails)
 
-## Próximos passos sugeridos
+- Hero: set `videoSrc` in `components/HeroVideo.tsx` or files under `public/media/`.
+- Questions: optional `media` on each question in `lib/tests.ts` (`videoSrc`, `poster`).
+- Concepts: `lib/concepts.ts` — replace placeholders when assets are ready.
 
-- Substituir links em `lib/products.ts` pelas landing pages reais.
-- Integrar formulário de lead (e-mail / WhatsApp) na página de resultado.
-- Persistir resultados em API ou CRM.
+## Suggested next steps
+
+- Replace links in `lib/products.ts` with live landing pages.
+- Add a lead form (email / WhatsApp) on the result page.
+- Persist results via API or CRM.

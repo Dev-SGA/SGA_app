@@ -15,37 +15,37 @@ export type TacticalProfile = {
 export const TACTICAL_PROFILES: Record<TacticalProfileId, TacticalProfile> = {
   leitor: {
     id: "leitor",
-    title: "Leitor de jogo",
-    headline: "Antecipa espaços antes da bola chegar",
+    title: "Game reader",
+    headline: "Anticipates space before the ball arrives",
     description:
-      "Você tende a escanear o campo, ajustar o corpo cedo e escolher a linha de passe que desorganiza a defesa adversária.",
+      "You tend to scan early, set your body shape, and choose passing lines that disrupt the opposing defense.",
   },
   organizador: {
     id: "organizador",
-    title: "Organizador",
-    headline: "Controla ritmo e estrutura da equipe",
+    title: "Organizer",
+    headline: "Controls tempo and team structure",
     description:
-      "Suas decisões costumam estabilizar a posse, conectar setores e manter a formação compacta entre fases do jogo.",
+      "Your decisions often stabilize possession, connect lines, and keep the shape compact across phases.",
   },
   verticalizador: {
     id: "verticalizador",
-    title: "Verticalizador",
-    headline: "Transforma posse em ameaça direta",
+    title: "Line breaker",
+    headline: "Turns possession into direct threat",
     description:
-      "Você busca ganhar linhas rapidamente — passes em profundidade, conduções entre linhas e apoio imediato ao último terço.",
+      "You look to gain ground quickly — through balls, carries between lines, and immediate support in the final third.",
   },
   recuperador: {
     id: "recuperador",
-    title: "Recuperador",
-    headline: "Leitura defensiva e timing de pressão",
+    title: "Ball winner",
+    headline: "Defensive reading and pressing timing",
     description:
-      "Prioriza coberturas, fechamento de corredores e o momento certo para disputar a bola sem quebrar o bloco.",
+      "You prioritize cover, lane closure, and the right moment to challenge without breaking the block.",
   },
   finalizador: {
     id: "finalizador",
-    title: "Finalizador",
-    headline: "Decisão no terço final",
+    title: "Finisher",
+    headline: "Decision-making in the final third",
     description:
-      "Orienta-se por espaço na área, timing de movimento e escolhas de finalização ou último passe antes do chute.",
+      "You orient to space in the box, movement timing, and choices to finish or play the last pass before the shot.",
   },
 };

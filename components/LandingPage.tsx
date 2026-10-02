@@ -11,43 +11,43 @@ export function LandingPage() {
   return (
     <div className="landing">
       <a className="landing-skip" href="#start">
-        Ir para os testes
+        Skip to tests
       </a>
 
-      <nav aria-label="Seções" className="landing-nav">
-        <a href="#start">Começar grátis</a>
-        <a href="#conceitos">O jogo</a>
-        <a href="#framework">Método</a>
+      <nav aria-label="Sections" className="landing-nav">
+        <a href="#start">Start free</a>
+        <a href="#concepts">The game</a>
+        <a href="#framework">Our method</a>
       </nav>
 
       <div className="landing-top-actions">
-        <Link href="/resultado" className="landing-text-link">
-          Ver resultado
+        <Link href="/result" className="landing-text-link">
+          View result
         </Link>
       </div>
 
       <header className="landing-hero">
-        <Link href="/" className="landing-hero__logo" aria-label={`${BRAND.name} — início`}>
+        <Link href="/" className="landing-hero__logo" aria-label={`${BRAND.name} — home`}>
           <SgaLogo variant="horizontal" size="hero" priority />
         </Link>
 
         <h1 className="landing-hero__title">
-          TREINE SEU
+          TRAIN YOUR
           <br />
-          <span className="landing-hero__accent">CÉREBRO TÁTICO</span>
+          <span className="landing-hero__accent">TACTICAL BRAIN</span>
         </h1>
 
         <p className="landing-hero__lead">
-          Leia o jogo. Decida melhor. Comece pelo teste tático gratuito e descubra produtos SGA para evoluir e se
-          apresentar a clubes.
+          Read the game. Make better decisions. Start with the free tactical test, then explore SGA products to
+          develop and showcase your profile to clubs.
         </p>
 
         <div className="landing-hero__ctas">
           <Link href={`/tests/${PRIMARY_TEST_SLUG}`} className="btn btn--primary btn--lg">
-            Fazer teste gratuito
+            Take the free test
           </Link>
-          <Link href="/resultado" className="btn btn--secondary btn--lg">
-            Ver meu resultado
+          <Link href="/result" className="btn btn--secondary btn--lg">
+            View my result
           </Link>
         </div>
 
@@ -58,9 +58,9 @@ export function LandingPage() {
 
       <section id="start" className="landing-section landing-section--wide">
         <div className="landing-section__intro">
-          <h2 className="landing-section__title">COMECE GRÁTIS</h2>
+          <h2 className="landing-section__title">START FREE</h2>
           <p className="landing-section__subtitle">
-            Seus primeiros passos: testar sua leitura, ver o resultado e explorar conceitos do seu perfil.
+            Your first steps: test your reading, review your result, and explore concepts for your profile.
           </p>
         </div>
         <div className="step-grid">
@@ -77,11 +77,13 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section id="catalogo" className="landing-section landing-section--wide">
+      <section id="catalog" className="landing-section landing-section--wide">
         <div className="landing-section__intro">
-          <p className="landing-section__eyebrow">Catálogo SGA</p>
-          <h2 className="landing-section__title">TESTES DISPONÍVEIS</h2>
-          <p className="landing-section__subtitle">Micro testes por fase do jogo — vídeos situacionais serão adicionados em breve.</p>
+          <p className="landing-section__eyebrow">SGA catalog</p>
+          <h2 className="landing-section__title">AVAILABLE TESTS</h2>
+          <p className="landing-section__subtitle">
+            Micro tests by phase of play — situational videos will be added soon.
+          </p>
         </div>
         <div className="catalog-grid">
           {TACTICAL_TESTS.map((test) => (
@@ -89,19 +91,19 @@ export function LandingPage() {
               <span className="catalog-card__phase">{test.phase}</span>
               <h3 className="catalog-card__title">{test.title}</h3>
               <p className="catalog-card__meta">
-                {test.questions.length} situações · ~{test.durationMinutes} min
+                {test.questions.length} scenarios · ~{test.durationMinutes} min
               </p>
             </Link>
           ))}
         </div>
       </section>
 
-      <section id="conceitos" className="landing-section landing-section--wide">
+      <section id="concepts" className="landing-section landing-section--wide">
         <div className="landing-section__intro">
-          <p className="landing-section__eyebrow">Aprenda conceitos como estes</p>
-          <h2 className="landing-section__title">ANÁLISE DE JOGO REAL</h2>
+          <p className="landing-section__eyebrow">Learn concepts like these</p>
+          <h2 className="landing-section__title">REAL MATCH ANALYSIS</h2>
           <p className="landing-section__subtitle">
-            Explore o jogo por conceitos táticos e animações guiadas (conteúdo em vídeo a ser publicado).
+            Explore the game through tactical concepts and guided animations (video content coming soon).
           </p>
         </div>
         <div className="concept-grid">
@@ -122,27 +124,25 @@ export function LandingPage() {
 
       <section className="landing-section landing-section--narrow access">
         <div className="access__primary">
-          <h2 className="landing-section__title access__title">Continue de onde parou.</h2>
-          <p>Seus resultados ficam salvos neste navegador até você concluir um novo teste.</p>
-          <Link href="/resultado" className="btn btn--secondary">
-            Abrir resultado
+          <h2 className="landing-section__title access__title">Pick up where you left off.</h2>
+          <p>Results are saved in this browser until you complete a new test.</p>
+          <Link href="/result" className="btn btn--secondary">
+            Open result
           </Link>
         </div>
         <div className="access__card card">
-          <h3>Já fez um teste?</h3>
-          <p className="access__card-text">
-            Revise nota, perfil tático e produtos recomendados da SGA Performance.
-          </p>
-          <Link href="/resultado" className="btn btn--primary">
-            Ver perfil e produtos
+          <h3>Already taken a test?</h3>
+          <p className="access__card-text">Review your score, tactical profile, and recommended SGA Performance products.</p>
+          <Link href="/result" className="btn btn--primary">
+            View profile & products
           </Link>
         </div>
       </section>
 
       <section id="framework" className="landing-section landing-section--wide">
         <div className="landing-section__intro">
-          <p className="landing-section__eyebrow landing-section__eyebrow--muted">Nossa metodologia</p>
-          <h2 className="landing-section__title">O FRAMEWORK A→T→E</h2>
+          <p className="landing-section__eyebrow landing-section__eyebrow--muted">Our methodology</p>
+          <h2 className="landing-section__title">THE A→T→E FRAMEWORK</h2>
         </div>
         <div className="framework-grid">
           {ATE_FRAMEWORK.map((phase) => (
@@ -158,10 +158,10 @@ export function LandingPage() {
       </section>
 
       <section className="landing-section landing-section--narrow hub card">
-        <h2 className="hub__title">Próximo passo com a SGA</h2>
-        <p>Transforme seu resultado em IDP, relatório de jogo ou material para captadores.</p>
-        <Link href="/resultado" className="btn btn--primary">
-          Ver produtos recomendados
+        <h2 className="hub__title">Next step with SGA</h2>
+        <p>Turn your result into an IDP, match report, or scouting materials.</p>
+        <Link href="/result" className="btn btn--primary">
+          View recommended products
         </Link>
       </section>
 

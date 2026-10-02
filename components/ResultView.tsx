@@ -30,15 +30,15 @@ export function ResultView({ testSlug }: ResultViewProps) {
   }, [testSlug]);
 
   if (!ready) {
-    return <p className="result-loading">Carregando resultado…</p>;
+    return <p className="result-loading">Loading result…</p>;
   }
 
   if (!result) {
     return (
       <div className="result-empty">
-        <p>Nenhum resultado recente encontrado. Faça um teste tático para ver seu perfil e produtos recomendados.</p>
+        <p>No recent result found. Take a tactical test to see your profile and recommended products.</p>
         <Link href="/" className="btn btn--primary">
-          Escolher teste
+          Choose a test
         </Link>
       </div>
     );
@@ -51,7 +51,7 @@ export function ResultView({ testSlug }: ResultViewProps) {
   return (
     <div className="result-grid">
       <section className="result-score card">
-        <p className="section-label">Resultado — {result.testTitle}</p>
+        <p className="section-label">Result — {result.testTitle}</p>
         <div className="result-score__ring" style={{ "--grade-color": gradeColor } as CSSProperties}>
           <span className="result-score__value">{result.score}</span>
           <span className="result-score__suffix">/ 100</span>
@@ -59,16 +59,14 @@ export function ResultView({ testSlug }: ResultViewProps) {
         <p className="result-score__grade" style={{ color: gradeColor }}>
           {result.gradeLabel}
         </p>
-        <p className="result-score__hint">
-          Índice de qualidade das decisões táticas neste teste (escala SGA).
-        </p>
+        <p className="result-score__hint">Tactical decision-quality index for this test (SGA scale).</p>
         <Link href={`/tests/${result.testSlug}`} className="btn btn--ghost">
-          Refazer teste
+          Retake test
         </Link>
       </section>
 
       <section className="result-profile card">
-        <p className="section-label">Perfil predominante</p>
+        <p className="section-label">Dominant profile</p>
         <h2 className="result-profile__title">{result.profileTitle}</h2>
         <p className="result-profile__headline">{result.profileHeadline}</p>
         <p className="result-profile__body">{result.profileDescription}</p>
@@ -76,16 +74,16 @@ export function ResultView({ testSlug }: ResultViewProps) {
 
       <section className="result-products">
         <div className="result-products__header">
-          <h2 className="result-products__title">Próximo passo com a SGA</h2>
+          <h2 className="result-products__title">Next step with SGA</h2>
           <p className="result-products__lead">
-            Com base no seu perfil, estes produtos ajudam a evoluir o jogo e apresentar seu potencial a clubes.
+            Based on your profile, these products help you develop and present your potential to clubs.
           </p>
         </div>
         <ul className="product-list" role="list">
           {products.map((product, i) => (
             <li key={product.id}>
               <article className={`product-card${i === 0 ? " product-card--featured" : ""}`}>
-                {i === 0 ? <span className="product-card__badge">Recomendado</span> : null}
+                {i === 0 ? <span className="product-card__badge">Recommended</span> : null}
                 <h3 className="product-card__name">{product.name}</h3>
                 <p className="product-card__tagline">{product.tagline}</p>
                 <p className="product-card__desc">{product.description}</p>

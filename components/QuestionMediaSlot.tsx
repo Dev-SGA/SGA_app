@@ -8,7 +8,7 @@ type QuestionMediaSlotProps = {
 };
 
 export function QuestionMediaSlot({ media, phase, index, total }: QuestionMediaSlotProps) {
-  const caption = media?.caption ?? "Diagrama / vídeo da situação — em breve";
+  const caption = media?.caption ?? "Situation diagram / video — coming soon";
 
   if (media?.videoSrc) {
     return (

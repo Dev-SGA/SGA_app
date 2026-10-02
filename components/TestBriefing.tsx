@@ -11,10 +11,10 @@ type TestBriefingProps = {
 export function TestBriefing({ test, onStart }: TestBriefingProps) {
   return (
     <div className="test-brief">
-      <p className="test-brief__eyebrow">Antes de começar</p>
+      <p className="test-brief__eyebrow">Before you begin</p>
       <h1 className="test-brief__title">{test.title}</h1>
       <p className="test-brief__meta">
-        {test.questions.length} situações · ~{test.durationMinutes} minutos · {test.phase}
+        {test.questions.length} scenarios · ~{test.durationMinutes} minutes · {test.phase}
       </p>
 
       <div className="card test-brief__rules">
@@ -24,8 +24,8 @@ export function TestBriefing({ test, onStart }: TestBriefingProps) {
               !
             </span>
             <div>
-              <strong>Leia o cenário com calma</strong>
-              <span>Cada pergunta simula um momento de jogo. Vídeos e diagramas serão adicionados em breve.</span>
+              <strong>Read each scenario carefully</strong>
+              <span>Every question simulates a match moment. Videos and diagrams will be added soon.</span>
             </div>
           </li>
           <li>
@@ -33,8 +33,8 @@ export function TestBriefing({ test, onStart }: TestBriefingProps) {
               !
             </span>
             <div>
-              <strong>Evite sair no meio</strong>
-              <span>Fechar a aba pode fazer você perder o progresso desta tentativa.</span>
+              <strong>Don&apos;t leave mid-test</strong>
+              <span>Closing or refreshing the tab may reset your progress for this attempt.</span>
             </div>
           </li>
           <li>
@@ -42,18 +42,18 @@ export function TestBriefing({ test, onStart }: TestBriefingProps) {
               ~
             </span>
             <div>
-              <strong>Reserve {test.durationMinutes} minutos</strong>
-              <span>Ao final, você vê nota, perfil tático e produtos SGA recomendados.</span>
+              <strong>Set aside {test.durationMinutes} minutes</strong>
+              <span>At the end you&apos;ll see your score, tactical profile, and recommended SGA products.</span>
             </div>
           </li>
         </ul>
       </div>
 
       <button type="button" className="btn btn--primary btn--lg btn--block" onClick={onStart}>
-        Estou pronto — iniciar teste
+        I&apos;m ready — start the test
       </button>
       <Link href="/" className="test-brief__back landing-text-link">
-        ← Voltar
+        ← Go back
       </Link>
     </div>
   );

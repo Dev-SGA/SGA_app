@@ -5,14 +5,14 @@ type ResultPageProps = {
   searchParams: Promise<{ test?: string }>;
 };
 
-export default async function ResultadoPage({ searchParams }: ResultPageProps) {
+export default async function ResultPage({ searchParams }: ResultPageProps) {
   const { test } = await searchParams;
 
   return (
     <SiteShell
-      eyebrow="Seu resultado"
-      title="Perfil & produtos"
-      meta="Use este resumo para conversar com a equipe SGA ou incluir no seu material de scouting."
+      eyebrow="Your result"
+      title="Profile & products"
+      meta="Use this summary with the SGA team or in your scouting materials."
     >
       <ResultView testSlug={test} />
     </SiteShell>

@@ -15,7 +15,7 @@ export function SiteShell({ eyebrow, title, meta, children }: SiteShellProps) {
     <>
       <div className="shell">
         <header className="report-header">
-          <Link href="/" className="report-header__logo-link" aria-label={`${BRAND.name} — início`}>
+          <Link href="/" className="report-header__logo-link" aria-label={`${BRAND.name} — home`}>
             <SgaBrand />
           </Link>
           <div className="report-header__intro">

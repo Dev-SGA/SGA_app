@@ -8,11 +8,11 @@ type HeroVideoProps = {
   caption?: string;
 };
 
-/** Slot de vídeo hero — preencher `videoSrc` em public/media quando disponível. */
+/** Hero video slot — set `videoSrc` under public/media when ready. */
 export function HeroVideo({
   poster = "/media/hero-poster.jpg",
   videoSrc,
-  caption = "Veja o jogo pela lente tática SGA.",
+  caption = "See the game through the SGA tactical lens.",
 }: HeroVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
@@ -44,21 +44,21 @@ export function HeroVideo({
             src={videoSrc}
           />
         ) : (
-          <div className="hero-video__placeholder" role="img" aria-label="Prévia tática em vídeo — em breve">
+          <div className="hero-video__placeholder" role="img" aria-label="Tactical video preview — coming soon">
             <span className="hero-video__placeholder-icon" aria-hidden="true">
               ▶
             </span>
-            <p>Vídeo introdutório em produção</p>
+            <p>Intro video in production</p>
           </div>
         )}
         <figcaption className="hero-video__caption">
           <span>{caption}</span>
           {videoSrc ? (
             <button type="button" className="hero-video__play" onClick={togglePlay}>
-              {playing ? "Pausar" : "Reproduzir vídeo"}
+              {playing ? "Pause" : "Play video"}
             </button>
           ) : (
-            <span className="hero-video__soon">Em breve</span>
+            <span className="hero-video__soon">Coming soon</span>
           )}
         </figcaption>
       </figure>

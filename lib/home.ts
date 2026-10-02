@@ -1,28 +1,28 @@
 import { TACTICAL_TESTS } from "@/lib/tests";
 
-export const PRIMARY_TEST_SLUG = TACTICAL_TESTS[0]?.slug ?? "leitura-posse";
+export const PRIMARY_TEST_SLUG = TACTICAL_TESTS[0]?.slug ?? "possession-reading";
 
 export const START_STEPS = [
   {
     number: "01",
-    title: "Conheça seu jogo",
-    body: "Comece pelo teste tático gratuito. Veja como você lê situações reais e onde pode evoluir.",
+    title: "Know your game",
+    body: "Start with the free tactical test. See how you read real match situations and where you can improve.",
     href: `/tests/${PRIMARY_TEST_SLUG}`,
-    action: "Fazer teste gratuito",
+    action: "Take the free test",
   },
   {
     number: "02",
-    title: "Seu resultado SGA",
-    body: "Ao concluir, receba nota, perfil predominante e recomendações de produtos para captadores e clubes.",
-    href: "/resultado",
-    action: "Ver último resultado",
+    title: "Your SGA result",
+    body: "When you finish, get your score, dominant profile, and product recommendations for scouts and clubs.",
+    href: "/result",
+    action: "View latest result",
   },
   {
     number: "03",
-    title: "Explore sua posição",
-    body: "Em breve: conceitos em vídeo e animações táticas alinhados ao seu perfil (POV do jogador e visão aérea).",
-    href: "#conceitos",
-    action: "Ver conceitos em breve",
+    title: "Explore your position",
+    body: "Coming soon: video concepts and tactical animations matched to your profile (player POV and bird's-eye view).",
+    href: "#concepts",
+    action: "Preview concepts",
   },
 ] as const;
 
@@ -30,22 +30,22 @@ export const ATE_FRAMEWORK = [
   {
     letter: "A",
     title: "Awareness",
-    subtitle: "Leitura",
-    body: "Ler o jogo. Saber o que acontece ao redor antes da bola chegar.",
+    subtitle: "Reading",
+    body: "Reading the game. Knowing what's happening around you before the ball arrives.",
     tone: "accent" as const,
   },
   {
     letter: "T",
     title: "Timing",
     subtitle: "Timing",
-    body: "Saber quando agir. A diferença entre uma boa ideia e uma boa jogada.",
+    body: "Knowing when to act. The difference between a good idea and a good play.",
     tone: "warn" as const,
   },
   {
     letter: "E",
     title: "Execution",
-    subtitle: "Execução",
-    body: "Executar sob pressão. Transformar decisões em ações no campo.",
+    subtitle: "Execution",
+    body: "Making it happen under pressure. Turning decisions into actions on the field.",
     tone: "positive" as const,
   },
 ] as const;
